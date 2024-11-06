@@ -6,11 +6,6 @@ class ApiResponse {
     this.message = message;
     this.success = statusCode<400;
     this.errors = false;
-    if (stacks) {
-      this.stack = stack;
-    } else {
-      Error.captureStackTrace(this, this.constructor);
-    }
   }
 }
 
