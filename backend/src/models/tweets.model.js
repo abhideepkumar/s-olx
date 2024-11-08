@@ -1,43 +1,39 @@
 import mongoose from "mongoose";
 
-const TweetSchema= new mongoose.Schema({
-    
-        title: {
+const TweetSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 280,
+    },
+    comments: [
+      {
+        body: {
           type: String,
           required: true,
           trim: true,
         },
-        comments: {
-          type: String,
-          required: true,
-          unique: true,
-          lowercase: true,
-          trim: true,
-          index: true,
-        },
-        email: {
-          type: String,
-          required: true,
-          unique: true,
-          lowercase: true,
-          trim: true,
-          index: true,
-        },
-        branch: {
-          type: String,
-          trim: true,
-          required: true,
-        },
-        clg_name: {
-          type: String,
-          // required: true,
-          trim: true,
-        },
-        profile_url: {
-          type: String, //cloudinary url
-          required:true,
-        },
-      
-},{timestamps:true})
+        date: { type: Date, required: true },
+      },
+    ],
+    upvotes: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    downvotes: {
+      type: Number,
+      default: 0,
+    },
+    studentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "StudentModel",
+      required: true,
+    },
+  },
+  { timestamps: true }
+);
 
-export const TweetModel=mongoose.model("TweetModel", TweetSchema)
+export const TweetModel = mongoose.model("TweetModel", TweetSchema);
