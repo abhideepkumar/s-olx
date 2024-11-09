@@ -20,7 +20,7 @@ const PostSchema = new mongoose.Schema(
           required: true,
           trim: true,
         },
-        date: { type: Date, required: true },
+        date: { type: Date, required: true, default: Date.now },
       },
     ],
     upvotes: [

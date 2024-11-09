@@ -21,12 +21,10 @@ const ProductSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
-    condition: [
-      {
-        type: Number,
-        required: true,
-      },
-    ],
+    condition: {
+      type: String,
+      required: true,
+    },
     tags: [
       {
         type: String,
@@ -54,7 +52,6 @@ const ProductSchema = new mongoose.Schema(
     deal_info: {
       price_locked: {
         type: Number,
-        required: true,
       },
       remark: {
         type: String,

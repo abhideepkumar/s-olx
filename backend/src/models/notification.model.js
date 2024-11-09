@@ -10,7 +10,7 @@ const NotificationSchema = new mongoose.Schema(
     message: { type: String, required: true },
     type: { type: String, enum: ["community", "chat", "product"] },
   },
-  { timestamp: true }
+  { timestamps: true }
 );
 
 export const NotificationModel = mongoose.model(

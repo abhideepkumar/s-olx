@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-require("dotenv").config();
 
 const StudentSchema = new mongoose.Schema(
   {
@@ -62,16 +61,13 @@ const StudentSchema = new mongoose.Schema(
 );
 
 StudentSchema.pre("save", async function (next) {
-  if (this.isModified(this.password)) return next();
-  this.password = bcrypt.hash(this.password, 10);
+  if (!this.isModified("password")) return next();
+  this.password = await bcrypt.hash(this.password, 10);
   next();
 });
 
-StudentSchema.methods.isPasswordCorrect = async function (password) {
-  return await bcrypt.compare(password, this.password);
-};
 StudentSchema.methods.generateAccessToken = async function () {
-  jwt.sign(
+  return await jwt.sign(
     {
       _id: this._id,
       name: this.name,
@@ -84,8 +80,9 @@ StudentSchema.methods.generateAccessToken = async function () {
     }
   );
 };
+
 StudentSchema.methods.generateRefreshToken = async function () {
-  jwt.sign(
+  return await jwt.sign(
     {
       _id: this._id,
     },
