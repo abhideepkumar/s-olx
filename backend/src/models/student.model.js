@@ -45,6 +45,18 @@ const StudentSchema = new mongoose.Schema(
       type: String, //cloudinary url
       required: true,
     },
+    products: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: ProductModel,
+      },
+    ],
+    posts: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: PostModel,
+      },
+    ],
   },
   { timestamps: true }
 );
