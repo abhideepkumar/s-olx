@@ -47,13 +47,13 @@ const UserSchema = new mongoose.Schema(
     products: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: ProductModel,
+        ref: "ProductModel",
       },
     ],
     posts: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: PostModel,
+        ref: "PostModel",
       },
     ],
   },

@@ -9,7 +9,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const UploadFile = async (localFilePath) => {
+export const UploadImage = async (localFilePath) => {
   if (!localFilePath)
     return { statue: false, message: "No or invalid file path found" };
   const uploadResult = await cloudinary.uploader
