@@ -2,9 +2,9 @@ import mongoose from "mongoose";
 
 const NotificationSchema = new mongoose.Schema(
   {
-    student: {
+    user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "StudentModel",
+      ref: "UserModel",
       required: true,
     },
     message: { type: String, required: true },

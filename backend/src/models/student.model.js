@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
-const StudentSchema = new mongoose.Schema(
+const UserSchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -60,13 +60,13 @@ const StudentSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-StudentSchema.pre("save", async function (next) {
+UserSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
 
-StudentSchema.methods.generateAccessToken = async function () {
+UserSchema.methods.generateAccessToken = async function () {
   return await jwt.sign(
     {
       _id: this._id,
@@ -81,7 +81,7 @@ StudentSchema.methods.generateAccessToken = async function () {
   );
 };
 
-StudentSchema.methods.generateRefreshToken = async function () {
+UserSchema.methods.generateRefreshToken = async function () {
   return await jwt.sign(
     {
       _id: this._id,
@@ -93,10 +93,10 @@ StudentSchema.methods.generateRefreshToken = async function () {
   );
 };
 
-export const StudentModel = mongoose.model("StudentModel", StudentSchema);
+export const UserModel = mongoose.model("UserModel", UserSchema);
 
 //? simple way to define models
-// const StudentSchema = new mongoose.Schema(
+// const UserSchema = new mongoose.Schema(
 //   {
 //     name: String,
 //     usn: Number,
@@ -108,4 +108,4 @@ export const StudentModel = mongoose.model("StudentModel", StudentSchema);
 //   { timestamps: true },
 // );
 
-// export const StudentModel = mongoose.model("StudentModel", StudentSchema)
+// export const UserModel = mongoose.model("UserModel", UserSchema)

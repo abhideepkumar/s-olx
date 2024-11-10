@@ -4,7 +4,7 @@ const PostSchema = new mongoose.Schema(
   {
     author: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "StudentModel",
+      ref: "UserModel",
       required: true,
     },
     content: {
@@ -26,13 +26,13 @@ const PostSchema = new mongoose.Schema(
     upvotes: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "StudentModel",
+        ref: "UserModel",
       },
     ],
     downvotes: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "StudentModel",
+        ref: "UserModel",
       },
     ],
   },

@@ -1,17 +1,5 @@
-const express = require("express");
-const connectDb = require("./db");
-require("dotenv").config();
-const cors = require("cors");
-const cookieParser = require("cookie-parser");
-
-// first start express
-const app = express(express.json({ limit: "16kb" }));
-// use cors
-app.use(cors());
-// more express configs
-app.use(express.urlencoded({ extended: true, limit: "16kb" }));
-// cookieparser
-app.use(cookieParser());
+import { app } from "./app.js";
+import connectDb from "./db.js";
 
 connectDb()
   .then(() => {
@@ -22,6 +10,3 @@ connectDb()
   .catch(() => {
     console.log("Error in connecting to database");
   });
-app.on("error", () => {
-  console.log("Error in starting express app");
-});

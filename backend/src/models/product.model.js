@@ -42,12 +42,12 @@ const ProductSchema = new mongoose.Schema(
     ],
     seller: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "StudentModel",
+      ref: "UserModel",
       required: true,
     },
     buyer: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "StudentModel",
+      ref: "UserModel",
     },
     deal_info: {
       price_locked: {
