@@ -8,6 +8,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 const registerUser = asyncHandler(async (req, res) => {
   const { name, usn, email, password, branch, clg_name, profile_url } =
     req.body;
+  // validate all field
   validateFields({
     name,
     usn,
@@ -16,7 +17,6 @@ const registerUser = asyncHandler(async (req, res) => {
     branch,
     clg_name,
   });
-
   console.log("All fields are valid in registerUser");
   // check if user exist or not
   const isExists = await UserModel.findOne({ $or: [{ email }, { usn }] });
@@ -24,24 +24,22 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(409, "User already exist with either same USN or email");
   }
   let cloudinaryUrl = "";
-  //* add default image if no image is uploaded by user
-  if (profile_url === "") {
-    cloudinaryUrl = process.env.CLOUDINARY_DEFAULT_IMAGE;
-  }
-  if (cloudinaryUrl === "") {
     // check for user image
-    console.log("Req File path: ", req?.files?.profile_url[0]?.path);
-    let profileLocalPath = req?.files?.profile_url[0]?.path;
+    console.log("Req File path: ", req?.files?.profile_url);
+    let profilePath =
+      req?.files?.profile_url == undefined
+        ? process.env.CLOUDINARY_DEFAULT_IMAGE
+        : req?.files?.profile_url[0]?.path;
     try {
-      if (profileLocalPath) {
-        const uploadResult = await UploadImage(profileLocalPath);
+      if (profilePath != process.env.CLOUDINARY_DEFAULT_IMAGE) {
+        const uploadResult = await UploadImage(profilePath);
         console.log("Upload Result :", uploadResult);
         if (!uploadResult || !uploadResult.url) {
           throw new ApiError(400, "Failed to upload image to cloudinary");
         }
         cloudinaryUrl = uploadResult.url;
       } else {
-        cloudinaryUrl = process.env.CLOUDINARY_DEFAULT_IMAGE;
+        cloudinaryUrl = profilePath;
       }
     } catch (error) {
       throw new ApiError(
@@ -49,7 +47,6 @@ const registerUser = asyncHandler(async (req, res) => {
         "Error uploading image to cloudinary: " + error.message
       );
     }
-  }
   // create user object
   const userData = {
     name,
