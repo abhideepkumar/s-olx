@@ -8,13 +8,6 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-// Debug log
-console.log("Cloudinary Config:", {
-  cloud_name: process.env.CLOUDINARY_API_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET?.substring(0,5) + "..."
-});
-
 export const UploadImage = async (localFilePath) => {
   try {
     const uploadResult = await cloudinary.uploader.upload(localFilePath, {
