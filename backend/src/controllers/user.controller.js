@@ -4,50 +4,52 @@ import { validateFields } from "../utils/validator.js";
 import { UserModel } from "../models/student.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import bcrypt from "bcrypt";
 
+//register user
 const registerUser = asyncHandler(async (req, res) => {
   const { name, usn, email, password, branch, clg_name, profile_url } =
     req.body;
-  // validate all field
-  validateFields({
-    name,
-    usn,
-    email,
-    password,
-    branch,
-    clg_name,
-  });
+
+  // Validate all fields
+  validateFields({ name, usn, email, password, branch, clg_name });
   console.log("All fields are valid in registerUser");
-  // check if user exist or not
+
+  // Check if user already exists
   const isExists = await UserModel.findOne({ $or: [{ email }, { usn }] });
   if (isExists) {
-    throw new ApiError(409, "User already exist with either same USN or email");
+    throw new ApiError(
+      409,
+      "User already exists with either same USN or email"
+    );
   }
+
   let cloudinaryUrl = "";
-    // check for user image
-    console.log("Req File path: ", req?.files?.profile_url);
-    let profilePath =
-      req?.files?.profile_url == undefined
-        ? process.env.CLOUDINARY_DEFAULT_IMAGE
-        : req?.files?.profile_url[0]?.path;
-    try {
-      if (profilePath != process.env.CLOUDINARY_DEFAULT_IMAGE) {
-        const uploadResult = await UploadImage(profilePath);
-        console.log("Upload Result :", uploadResult);
-        if (!uploadResult || !uploadResult.url) {
-          throw new ApiError(400, "Failed to upload image to cloudinary");
-        }
-        cloudinaryUrl = uploadResult.url;
-      } else {
-        cloudinaryUrl = profilePath;
+
+  // Handle user profile image upload
+  const profilePath =
+    req?.files?.profile_url === undefined
+      ? process.env.CLOUDINARY_DEFAULT_IMAGE
+      : req?.files?.profile_url[0]?.path;
+
+  try {
+    if (profilePath !== process.env.CLOUDINARY_DEFAULT_IMAGE) {
+      const uploadResult = await UploadImage(profilePath);
+      if (!uploadResult || !uploadResult.url) {
+        throw new ApiError(400, "Failed to upload image to Cloudinary");
       }
-    } catch (error) {
-      throw new ApiError(
-        400,
-        "Error uploading image to cloudinary: " + error.message
-      );
+      cloudinaryUrl = uploadResult.url;
+    } else {
+      cloudinaryUrl = profilePath;
     }
-  // create user object
+  } catch (error) {
+    throw new ApiError(
+      400,
+      `Error uploading image to Cloudinary: ${error.message}`
+    );
+  }
+
+  // Create user object
   const userData = {
     name,
     usn,
@@ -58,8 +60,8 @@ const registerUser = asyncHandler(async (req, res) => {
     profile_url: cloudinaryUrl,
   };
 
-  // Create user in database
   try {
+    // Create user in the database
     const newUser = await UserModel.create(userData);
     console.log("User created:", newUser);
 
@@ -67,8 +69,33 @@ const registerUser = asyncHandler(async (req, res) => {
       .status(201)
       .json(new ApiResponse(201, "New User Created", newUser));
   } catch (error) {
-    throw new ApiError(500, "Error creating user: " + error.message);
+    throw new ApiError(500, `Error creating user: ${error.message}`);
   }
 });
 
 export { registerUser };
+
+//login user
+const loginUser = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+
+  validateFields({ email, password });
+  console.log("All fields are valid in loginUser");
+
+  // 3. Find user by email
+  const user = await UserModel.findOne({ email });
+  if (!user) {
+    throw new ApiError(401, "User email not found");
+  }
+  console.log("User found:", user);
+
+  // 4. Compare passwords
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+  if (!isPasswordValid) {
+    throw new ApiError(401, "Invalid credentials");
+  }
+
+  return res.status(200).json(new ApiResponse(200, "Login successful"));
+});
+
+export { loginUser };

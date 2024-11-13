@@ -16,6 +16,5 @@ import userRouter from "./routes/user.routes.js";
 
 // routes decclaration
 app.use("/api/v1/users", userRouter);
-console.log("/api/v1/users/register");
 
 export { app };

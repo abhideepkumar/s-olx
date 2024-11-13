@@ -1,11 +1,11 @@
 import { Router } from "express";
 import multer from "multer";
-import { registerUser } from "../controllers/user.controller.js";
+import { registerUser,loginUser } from "../controllers/user.controller.js";
 import { ApiError } from "../utils/ApiError.js";
 import { upload } from "../middleware/multer.middleware.js";
 
 const router = Router();
-
+// user register 
 router.route("/register").post((req, res, next) => {
   upload.fields([{ name: "profile_url", maxCount: 1 }])(req, res, (err) => {
     if (err instanceof multer.MulterError) {
@@ -24,5 +24,8 @@ router.route("/register").post((req, res, next) => {
     next();
   });
 }, registerUser);
+
+// user login
+router.route("/login").post(loginUser)
 
 export default router;
