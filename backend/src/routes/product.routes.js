@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { CreateProduct,FindProductById } from '../controllers/product.controller.js';
+import { CreateProduct, FindProductById, ProductForHomepage } from '../controllers/product.controller.js';
 import multer from 'multer';
 import { upload } from '../middleware/multer.middleware.js';
 import { ApiError } from '../utils/ApiError.js';
@@ -25,5 +25,9 @@ router.route('/create').post((req, res, next) => {
 }, CreateProduct);
 
 //* fetch product using ID
-router.route("/:id").get(FindProductById)
+router.route('/id/:id').get(FindProductById);
+
+//* fetch products for homepage
+router.route('/homepage').get(ProductForHomepage);
+
 export default router;

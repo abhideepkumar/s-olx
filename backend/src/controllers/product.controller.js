@@ -67,3 +67,19 @@ export const FindProductById = asyncHandler(async (req, res) => {
       .json(new ApiError(error.statusCode || 500, error.message || 'An error occurred', error));
   }
 });
+
+// get products for homepage
+export const ProductForHomepage = asyncHandler(async (req, res) => {
+  try {
+    //* values allowed are asc, desc, ascending, descending, 1, and -1 for sort operator
+    const products = await ProductModel.find().sort({ createdAt: -1 }).limit(10);
+    console.log('homepage products: ', products);
+    if (!products) {
+      throw new ApiError(400, 'No products found to show');
+    }
+    res.status(200).json(new ApiResponse(200, 'Products for homepage fetched successfully', products));
+  } catch (error) {
+    throw new ApiError(500, 'Failed to fetch products for homepage', error);
+  }
+});
+
