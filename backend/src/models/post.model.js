@@ -1,10 +1,10 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const PostSchema = new mongoose.Schema(
   {
     author: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "UserModel",
+      ref: 'UserModel',
       required: true,
     },
     content: {
@@ -15,6 +15,10 @@ const PostSchema = new mongoose.Schema(
     },
     comments: [
       {
+        author: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'UserModel',
+        },
         body: {
           type: String,
           required: true,
@@ -26,17 +30,17 @@ const PostSchema = new mongoose.Schema(
     upvotes: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "UserModel",
+        ref: 'UserModel',
       },
     ],
     downvotes: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "UserModel",
+        ref: 'UserModel',
       },
     ],
   },
   { timestamps: true }
 );
 
-export const PostModel = mongoose.model("PostModel", PostSchema);
+export const PostModel = mongoose.model('PostModel', PostSchema);
