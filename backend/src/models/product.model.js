@@ -42,12 +42,12 @@ const ProductSchema = new mongoose.Schema(
     ],
     seller: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "UserModel",
+      ref: "user",
       required: true,
     },
     buyer: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "UserModel",
+      ref: "user",
     },
     deal_info: {
       price_locked: {
@@ -66,4 +66,4 @@ const ProductSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export const ProductModel = mongoose.model("ProductModel", ProductSchema);
+export const product = mongoose.model("product", ProductSchema);

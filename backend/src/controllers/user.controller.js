@@ -1,7 +1,7 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { UploadImage } from "../utils/cloudinary/cloudinary.js";
 import { validateFields } from "../utils/validator.js";
-import { UserModel } from "../models/student.model.js";
+import { user } from "../models/user.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import bcrypt from "bcrypt";
@@ -16,7 +16,7 @@ const registerUser = asyncHandler(async (req, res) => {
   console.log("All fields are valid in registerUser");
 
   // Check if user already exists
-  const isExists = await UserModel.findOne({ $or: [{ email }, { usn }] });
+  const isExists = await user.findOne({ $or: [{ email }, { usn }] });
   if (isExists) {
     throw new ApiError(
       409,
@@ -62,7 +62,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
   try {
     // Create user in the database
-    const newUser = await UserModel.create(userData);
+    const newUser = await user.create(userData);
     console.log("User created:", newUser);
 
     return res
@@ -83,7 +83,7 @@ const loginUser = asyncHandler(async (req, res) => {
   console.log("All fields are valid in loginUser");
 
   // 3. Find user by email
-  const user = await UserModel.findOne({ email });
+  const user = await user.findOne({ email });
   if (!user) {
     throw new ApiError(401, "User email not found");
   }

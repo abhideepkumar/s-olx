@@ -47,13 +47,13 @@ const UserSchema = new mongoose.Schema(
     products: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "ProductModel",
+        ref: "product",
       },
     ],
     posts: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "PostModel",
+        ref: "posts",
       },
     ],
   },
@@ -93,7 +93,7 @@ UserSchema.methods.generateRefreshToken = async function () {
   );
 };
 
-export const UserModel = mongoose.model("UserModel", UserSchema);
+export const user = mongoose.model("user", UserSchema);
 
 //? simple way to define models
 // const UserSchema = new mongoose.Schema(
@@ -108,4 +108,4 @@ export const UserModel = mongoose.model("UserModel", UserSchema);
 //   { timestamps: true },
 // );
 
-// export const UserModel = mongoose.model("UserModel", UserSchema)
+// export const user = mongoose.model("user", UserSchema)

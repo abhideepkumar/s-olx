@@ -1,19 +1,16 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const NotificationSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "UserModel",
+      ref: 'user',
       required: true,
     },
     message: { type: String, required: true },
-    type: { type: String, enum: ["community", "chat", "product"] },
+    type: { type: String, enum: ['community', 'chat', 'product'] },
   },
   { timestamps: true }
 );
 
-export const NotificationModel = mongoose.model(
-  "NotificationModel",
-  NotificationSchema
-);
+export const notification = mongoose.model('notification', NotificationSchema);

@@ -2,11 +2,11 @@ import mongoose from "mongoose";
 
 const ChatSchema = new mongoose.Schema(
   {
-    participants: [{ type: mongoose.Schema.Types.ObjectId, ref: "UserModel" }],
-    product: { type: mongoose.Schema.Types.ObjectId, ref: "ProductModel" },
+    participants: [{ type: mongoose.Schema.Types.ObjectId, ref: "user" }],
+    product: { type: mongoose.Schema.Types.ObjectId, ref: "product" },
     messages: [
       {
-        sender: { type: mongoose.Schema.Types.ObjectId, ref: "UserModel" },
+        sender: { type: mongoose.Schema.Types.ObjectId, ref: "user" },
         message: { type: String },
         timestamp: { type: Date, default: Date.now },
       },
@@ -15,4 +15,4 @@ const ChatSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export const ChatModel = mongoose.model("ChatModel",ChatSchema)
+export const chat = mongoose.model("chat",ChatSchema)

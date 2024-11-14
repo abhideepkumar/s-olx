@@ -4,7 +4,7 @@ const PostSchema = new mongoose.Schema(
   {
     author: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'UserModel',
+      ref: 'user',
       required: true,
     },
     content: {
@@ -17,7 +17,7 @@ const PostSchema = new mongoose.Schema(
       {
         author: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: 'UserModel',
+          ref: 'user',
         },
         body: {
           type: String,
@@ -30,17 +30,17 @@ const PostSchema = new mongoose.Schema(
     upvotes: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'UserModel',
+        ref: 'user',
       },
     ],
     downvotes: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'UserModel',
+        ref: 'user',
       },
     ],
   },
   { timestamps: true }
 );
 
-export const PostModel = mongoose.model('PostModel', PostSchema);
+export const posts = mongoose.model('posts', PostSchema);

@@ -3,7 +3,7 @@ import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { validateFields } from '../utils/validator.js';
 import { UploadImage } from '../middleware/multer.middleware.js';
-import { ProductModel } from '../models/product.model.js';
+import { product } from '../models/product.model.js';
 
 // create product
 export const CreateProduct = asyncHandler(async (req, res) => {
@@ -41,7 +41,7 @@ export const CreateProduct = asyncHandler(async (req, res) => {
 
     console.log('Payload:', payload);
     //* upload the new product to mongodb
-    const newProduct = await ProductModel.create(payload);
+    const newProduct = await product.create(payload);
     res.status(201).json(new ApiResponse(201, 'New Product listed successfully', newProduct));
   } catch (error) {
     console.error('Error uploading product:', error);
@@ -55,7 +55,7 @@ export const FindProductById = asyncHandler(async (req, res) => {
   console.log('Product id searching for:', id);
 
   try {
-    const product = await ProductModel.findById(id);
+    const product = await product.findById(id);
     if (!product) {
       throw new ApiError(404, 'Product not found');
     }
@@ -72,7 +72,7 @@ export const FindProductById = asyncHandler(async (req, res) => {
 export const ProductForHomepage = asyncHandler(async (req, res) => {
   try {
     //* values allowed are asc, desc, ascending, descending, 1, and -1 for sort operator
-    const products = await ProductModel.find().sort({ createdAt: -1 }).limit(10);
+    const products = await product.find().sort({ createdAt: -1 }).limit(10);
     console.log('homepage products: ', products);
     if (!products) {
       throw new ApiError(400, 'No products found to show');
