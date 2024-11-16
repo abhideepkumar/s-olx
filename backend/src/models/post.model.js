@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 const PostSchema = new mongoose.Schema(
   {
-    author: {
+    user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'user',
       required: true,
@@ -15,7 +15,7 @@ const PostSchema = new mongoose.Schema(
     },
     comments: [
       {
-        author: {
+        user: {
           type: mongoose.Schema.Types.ObjectId,
           ref: 'user',
         },
