@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const ProductSchema = new mongoose.Schema(
   {
@@ -42,28 +42,20 @@ const ProductSchema = new mongoose.Schema(
     ],
     seller: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "user",
+      ref: 'user',
       required: true,
-    },
-    buyer: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "user",
-    },
-    deal_info: {
-      price_locked: {
-        type: Number,
-      },
-      remark: {
-        type: String,
-      },
-      status: {
-        type: String,
-        enum: ["accepted", "pending"],
-        default: "pending",
-      },
     },
   },
   { timestamps: true }
 );
 
-export const product = mongoose.model("product", ProductSchema);
+ProductSchema.index({
+  title: 'text',
+  description: 'text',
+  more_info: 'text',
+  condition: 'text',
+  tags: 'text',
+  category: 'text',
+});
+
+export const product = mongoose.model('product', ProductSchema);

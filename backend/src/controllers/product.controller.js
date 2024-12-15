@@ -7,10 +7,10 @@ import { product } from '../models/product.model.js';
 
 // create product
 export const CreateProduct = asyncHandler(async (req, res) => {
-  const { title, description, more_info, price, condition, tags, category, seller, buyer } = req.body;
-  console.log('Received data:', { title, description, more_info, price, condition, tags, category, seller, buyer });
+  const { title, description, more_info, price, condition, tags, category, seller } = req.body;
+  console.log('Received data:', { title, description, more_info, price, condition, tags, category, seller });
   //* validate fields
-  validateFields({ title, description, price, condition, tags, category, seller, buyer });
+  validateFields({ title, description, price, condition, tags, category, seller });
   //* check for images being empty or not
   const images = req?.files?.images;
   if (!images) {
@@ -36,7 +36,6 @@ export const CreateProduct = asyncHandler(async (req, res) => {
       category,
       images: cloudinaryUrls,
       seller,
-      buyer,
     };
 
     console.log('Payload:', payload);
@@ -83,3 +82,12 @@ export const ProductForHomepage = asyncHandler(async (req, res) => {
   }
 });
 
+//* get product by search query
+export const ProductBySearch = asyncHandler(async (req, res) => {
+  const { searchText } = req.query;
+  const products = await product.find({ $text: { $search: searchText } }).select('title description more_info condition category tags').limit(20);
+  if(!products){
+    return res.status(404).json(new ApiError(404, 'No Product found',products))
+  }
+  res.status(200).json(new ApiResponse(200, 'Product fetched successfully',products))
+});

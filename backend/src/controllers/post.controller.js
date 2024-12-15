@@ -73,14 +73,29 @@ export const getPosts = asyncHandler(async (req, res) => {
   // Fetch paginated posts
   const allPosts = await posts
     .find()
+    .select('-comments')
     .sort({ createdAt: -1 })
     .limit(10)
     .populate('user', 'name usn profile_url')
-    .populate('comments.user', 'name usn profile_url')
+    //? no need to fetch comments here
+    // .populate('comments.user', 'name usn profile_url')
     .lean();
   if (!allPosts) {
     throw new ApiError(400, 'No posts found');
   }
   // If no posts found, return empty array instead of throwing error
   return res.status(200).json(new ApiResponse(200, 'Posts fetched successfully', allPosts));
+});
+
+//* getComments
+export const getComments = asyncHandler(async (req,res) => {
+  const { postId } = req.params;
+  console.log('Comments for :', postId);
+  // check post valid
+  const postComments =await posts.findById(postId).select('comments').lean();
+  console.log("PostCommnets:",postComments)
+  if (!postComments) {
+    res.status(404).json(new ApiError(404, 'No comments found'));
+  }
+  return res.status(200).json(new ApiResponse(200,'Comments fetched successfully',postComments))
 });
