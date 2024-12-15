@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import Image from 'next/image'
 
 export default function WishlistPage() {
   // TODO: Fetch wishlist items
@@ -53,7 +54,7 @@ export default function WishlistPage() {
             <Card className="overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
               <CardContent className="p-0">
                 <div className="aspect-w-4 aspect-h-3">
-                  <img src={item.image} alt={item.title} className="object-cover w-full h-full rounded-t-lg" />
+                  <Image height={200} width={200} src={item.image} alt={item.title} className="object-cover w-full h-full rounded-t-lg" />
                 </div>
                 <div className="p-4">
                   <div className="flex items-center mb-2">

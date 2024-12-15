@@ -2,6 +2,9 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { EditProfileDialog } from '@/components/edit-profile-dialog'
+import { EditProductDialog } from '@/components/edit-product-dialog'
+import Image from 'next/image'
 
 export default function ProfilePage() {
   // TODO: Fetch user data and products
@@ -15,8 +18,8 @@ export default function ProfilePage() {
   }
 
   const listedProducts = [
-    { id: 1, title: 'Textbook', price: 25, image: '/placeholder.svg' },
-    { id: 2, title: 'Laptop', price: 500, image: '/placeholder.svg' },
+    { id: 1, title: 'Textbook', price: 25, image: '/placeholder.svg', description: 'A great textbook', condition: 'good', category: 'books', tags: ['textbook', 'cs'], images: ['/placeholder.svg'] },
+    { id: 2, title: 'Laptop', price: 500, image: '/placeholder.svg', description: 'Powerful laptop', condition: 'like-new', category: 'electronics', tags: ['laptop', 'tech'], images: ['/placeholder.svg'] },
   ]
 
   const boughtProducts = [
@@ -51,7 +54,7 @@ export default function ProfilePage() {
                 <p>{user.clg_name}</p>
               </div>
             </div>
-            <Button className="rounded-full">Edit Profile</Button>
+            <EditProfileDialog user={user} />
           </div>
         </CardContent>
       </Card>
@@ -65,12 +68,12 @@ export default function ProfilePage() {
           {listedProducts.map((product) => (
             <Card key={product.id}>
               <CardContent className="flex items-center space-x-4 p-4">
-                <img src={product.image} alt={product.title} className="w-16 h-16 object-cover rounded-lg" />
+                <Image height={200} width={200} src={product.image} alt={product.title} className="w-16 h-16 object-cover rounded-lg" />
                 <div className="flex-1">
                   <h3 className="font-semibold">{product.title}</h3>
                   <p className="text-gray-500">${product.price}</p>
                 </div>
-                <Button variant="outline" className="rounded-full">Edit</Button>
+                <EditProductDialog product={product} />
               </CardContent>
             </Card>
           ))}
@@ -79,7 +82,7 @@ export default function ProfilePage() {
           {boughtProducts.map((product) => (
             <Card key={product.id}>
               <CardContent className="flex items-center space-x-4 p-4">
-                <img src={product.image} alt={product.title} className="w-16 h-16 object-cover rounded-lg" />
+                <Image height={200} width={200} src={product.image} alt={product.title} className="w-16 h-16 object-cover rounded-lg" />
                 <div className="flex-1">
                   <h3 className="font-semibold">{product.title}</h3>
                   <p className="text-gray-500">${product.price}</p>

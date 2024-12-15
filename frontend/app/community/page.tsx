@@ -12,6 +12,7 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu'
+import { EditPostDialog } from '@/components/edit-post-dialog'
 
 export default function CommunityPage() {
   const [posts, setPosts] = useState([
@@ -105,7 +106,10 @@ export default function CommunityPage() {
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem>Report</DropdownMenuItem>
                     {post.author === currentUser.name && (
-                      <DropdownMenuItem className="text-red-600">Delete</DropdownMenuItem>
+                      <>
+                        <EditPostDialog post={post} />
+                        <DropdownMenuItem className="text-red-600">Delete</DropdownMenuItem>
+                      </>
                     )}
                   </DropdownMenuContent>
                 </DropdownMenu>
