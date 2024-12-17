@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { CreateProduct, FindProductById, ProductForHomepage, ProductBySearch } from '../controllers/product.controller.js';
+import { CreateProduct, FindProductById, ProductForHomepage, ProductBySearch, markProductAsSold, addToWishlist, removeFromWishlist, getSimilarProducts, addProductReview, filterProducts,deleteProduct,updateProduct,getProductsByCategory,getProductsBySeller } from '../controllers/product.controller.js';
 import multer from 'multer';
 import { upload } from '../middleware/multer.middleware.js';
 import { ApiError } from '../utils/ApiError.js';
@@ -32,5 +32,15 @@ router.route('/homepage').get(ProductForHomepage);
 
 //* fetch products by search  
 router.route('/product-search').get(ProductBySearch);
+router.route("/delete/:productId").delete(deleteProduct);
+router.route("/update/:productId").patch(updateProduct);
+router.route("/seller/:sellerId").get(getProductsBySeller);
+router.route("/category/:category").get(getProductsByCategory);
+router.route("/mark-sold/:productId").post(markProductAsSold);
+router.route("/wishlist/add/:productId").post(addToWishlist);
+router.route("/wishlist/remove/:productId").delete(removeFromWishlist);
+router.route("/similar/:productId").get(getSimilarProducts);
+router.route("/review/:productId").post(addProductReview);
+router.route("/filter").get(filterProducts);
 
 export default router;

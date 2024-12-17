@@ -5,6 +5,11 @@ import { user } from '../models/user.model.js';
 import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import bcrypt from 'bcrypt';
+import mongoose from 'mongoose';
+import { posts } from '../models/post.model.js';
+import { product } from '../models/product.model.js';
+import { productSold } from '../models/product.sold.model.js';
+import { wishlist } from '../models/wishlist.model.js';
 
 //register user
 const registerUser = asyncHandler(async (req, res) => {
@@ -88,4 +93,88 @@ const loginUser = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, 'Login successful'));
 });
 
+export const getUserProfile = asyncHandler(async (req, res) => {
+  const { userId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    throw new ApiError(400, 'Invalid user ID format');
+  }
+
+  const userProfile = await user
+    .findById(userId)
+    .select('-password')
+    .populate('products')
+    .populate('posts');
+
+  if (!userProfile) {
+    throw new ApiError(404, 'User not found');
+  }
+
+  return res.status(200).json(
+    new ApiResponse(200, 'User profile fetched successfully', userProfile)
+  );
+});
+
+export const updateUserProfile = asyncHandler(async (req, res) => {
+  const { userId } = req.params;
+  const { name, branch, clg_name } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    throw new ApiError(400, 'Invalid user ID format');
+  }
+
+  let updateData = {
+    name,
+    branch,
+    clg_name
+  };
+
+  // Handle profile image update if provided
+  if (req.files?.profile_url) {
+    const uploadResult = await UploadImage(req.files.profile_url[0].path);
+    if (!uploadResult?.url) {
+      throw new ApiError(400, 'Failed to upload image');
+    }
+    updateData.profile_url = uploadResult.url;
+  }
+
+  const updatedUser = await user.findByIdAndUpdate(
+    userId,
+    { $set: updateData },
+    { new: true, runValidators: true }
+  ).select('-password');
+
+  if (!updatedUser) {
+    throw new ApiError(404, 'User not found');
+  }
+
+  return res.status(200).json(
+    new ApiResponse(200, 'Profile updated successfully', updatedUser)
+  );
+});
+
 export { loginUser };
+
+export const getUserStats = asyncHandler(async (req, res) => {
+  const { userId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    throw new ApiError(400, 'Invalid user ID format');
+  }
+
+  const postCount = await posts.countDocuments({ user: userId });
+  const productCount = await product.countDocuments({ seller: userId });
+  const soldProductCount = await productSold.countDocuments({ 
+    product: { $in: await product.find({ seller: userId }).select('_id') }
+  });
+  const wishlistCount = await wishlist.findOne({ user: userId }).then(w => w?.products?.length || 0);
+
+  return res.status(200).json(
+    new ApiResponse(200, 'User statistics fetched successfully', {
+      posts: postCount,
+      products: productCount,
+      soldProducts: soldProductCount,
+      wishlistItems: wishlistCount
+    })
+  );
+});

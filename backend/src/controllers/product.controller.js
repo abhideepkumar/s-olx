@@ -4,6 +4,10 @@ import { ApiResponse } from '../utils/ApiResponse.js';
 import { validateFields } from '../utils/validator.js';
 import { UploadImage } from '../middleware/multer.middleware.js';
 import { product } from '../models/product.model.js';
+import { productSold } from '../models/product.sold.model.js';
+import { wishlist } from '../models/wishlist.model.js';
+import { productReview } from '../models/product.review.model.js';
+import mongoose from 'mongoose';
 
 // create product
 export const CreateProduct = asyncHandler(async (req, res) => {
@@ -90,4 +94,239 @@ export const ProductBySearch = asyncHandler(async (req, res) => {
     return res.status(404).json(new ApiError(404, 'No Product found',products))
   }
   res.status(200).json(new ApiResponse(200, 'Product fetched successfully',products))
+});
+
+export const deleteProduct = asyncHandler(async (req, res) => {
+  const { productId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    throw new ApiError(400, 'Invalid product ID format');
+  }
+
+  const deletedProduct = await product.findByIdAndDelete(productId);
+
+  if (!deletedProduct) {
+    throw new ApiError(404, 'Product not found');
+  }
+
+  return res.status(200).json(
+    new ApiResponse(200, 'Product deleted successfully', {})
+  );
+});
+
+export const updateProduct = asyncHandler(async (req, res) => {
+  const { productId } = req.params;
+  const { title, description, more_info, price, condition, tags, category } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    throw new ApiError(400, 'Invalid product ID format');
+  }
+
+  let updateData = {
+    title,
+    description,
+    more_info,
+    price,
+    condition,
+    tags,
+    category
+  };
+
+  // Handle image updates if provided
+  if (req.files?.images) {
+    const cloudinaryUrls = await Promise.all(
+      req.files.images.map(async (image) => {
+        const uploadResult = await UploadImage(image.path);
+        if (!uploadResult?.url) throw new ApiError(400, 'Failed to upload image');
+        return uploadResult.url;
+      })
+    );
+    updateData.images = cloudinaryUrls;
+  }
+
+  const updatedProduct = await product.findByIdAndUpdate(
+    productId,
+    { $set: updateData },
+    { new: true, runValidators: true }
+  );
+
+  if (!updatedProduct) {
+    throw new ApiError(404, 'Product not found');
+  }
+
+  return res.status(200).json(
+    new ApiResponse(200, 'Product updated successfully', updatedProduct)
+  );
+});
+
+export const getProductsBySeller = asyncHandler(async (req, res) => {
+  const { sellerId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(sellerId)) {
+    throw new ApiError(400, 'Invalid seller ID format');
+  }
+
+  const products = await product
+    .find({ seller: sellerId })
+    .sort({ createdAt: -1 });
+
+  return res.status(200).json(
+    new ApiResponse(200, 'Products fetched successfully', products)
+  );
+});
+
+export const getProductsByCategory = asyncHandler(async (req, res) => {
+  const { category } = req.params;
+
+  const products = await product
+    .find({ category })
+    .sort({ createdAt: -1 });
+
+  return res.status(200).json(
+    new ApiResponse(200, 'Products fetched successfully', products)
+  );
+});
+
+export const markProductAsSold = asyncHandler(async (req, res) => {
+  const { productId } = req.params;
+  const { buyerId, price_locked, remark } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    throw new ApiError(400, 'Invalid product ID format');
+  }
+
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const productToSell = await product.findById(productId).session(session);
+    if (!productToSell) {
+      throw new ApiError(404, 'Product not found');
+    }
+
+    // Create entry in productSold collection
+    const soldProduct = await productSold.create([{
+      product: productId,
+      buyer: buyerId,
+      price_locked,
+      remark
+    }], { session });
+
+    // Delete from products collection
+    await product.findByIdAndDelete(productId).session(session);
+
+    await session.commitTransaction();
+    return res.status(200).json(
+      new ApiResponse(200, 'Product marked as sold successfully', soldProduct[0])
+    );
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
+  }
+});
+
+export const addToWishlist = asyncHandler(async (req, res) => {
+  const { productId } = req.params;
+  const { userId } = req.body;
+
+  const userWishlist = await wishlist.findOneAndUpdate(
+    { user: userId },
+    { $addToSet: { products: productId } },
+    { upsert: true, new: true }
+  );
+
+  return res.status(200).json(
+    new ApiResponse(200, 'Product added to wishlist', userWishlist)
+  );
+});
+
+export const getSimilarProducts = asyncHandler(async (req, res) => {
+  const { productId } = req.params;
+
+  const currentProduct = await product.findById(productId);
+  if (!currentProduct) {
+    throw new ApiError(404, 'Product not found');
+  }
+
+  const similarProducts = await product.find({
+    $and: [
+      { _id: { $ne: productId } },
+      {
+        $or: [
+          { category: currentProduct.category },
+          { tags: { $in: currentProduct.tags } }
+        ]
+      }
+    ]
+  }).limit(5);
+
+  return res.status(200).json(
+    new ApiResponse(200, 'Similar products fetched successfully', similarProducts)
+  );
+});
+
+export const addProductReview = asyncHandler(async (req, res) => {
+  const { productId } = req.params;
+  const { userId, rating, review } = req.body;
+
+  if (!rating || !review?.trim()) {
+    throw new ApiError(400, 'Rating and review are required');
+  }
+
+  const newReview = await productReview.create({
+    product: productId,
+    user: userId,
+    rating,
+    review: review.trim()
+  });
+
+  return res.status(201).json(
+    new ApiResponse(201, 'Review added successfully', newReview)
+  );
+});
+
+export const filterProducts = asyncHandler(async (req, res) => {
+  const { minPrice, maxPrice, category, condition } = req.query;
+
+  let query = {};
+
+  if (minPrice || maxPrice) {
+    query.price = {};
+    if (minPrice) query.price.$gte = Number(minPrice);
+    if (maxPrice) query.price.$lte = Number(maxPrice);
+  }
+
+  if (category) query.category = category;
+  if (condition) query.condition = condition;
+
+  const filteredProducts = await product.find(query).sort({ createdAt: -1 });
+
+  return res.status(200).json(
+    new ApiResponse(200, 'Products filtered successfully', filteredProducts)
+  );
+});
+
+export const removeFromWishlist = asyncHandler(async (req, res) => {
+  const { productId } = req.params;
+  const { userId } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(productId) || !mongoose.Types.ObjectId.isValid(userId)) {
+    throw new ApiError(400, 'Invalid product ID or user ID format');
+  }
+
+  const updatedWishlist = await wishlist.findOneAndUpdate(
+    { user: userId },
+    { $pull: { products: productId } },
+    { new: true }
+  );
+
+  if (!updatedWishlist) {
+    throw new ApiError(404, 'Wishlist not found for this user');
+  }
+
+  return res.status(200).json(
+    new ApiResponse(200, 'Product removed from wishlist successfully', updatedWishlist)
+  );
 });

@@ -99,3 +99,132 @@ export const getComments = asyncHandler(async (req,res) => {
   }
   return res.status(200).json(new ApiResponse(200,'Comments fetched successfully',postComments))
 });
+
+export const deletePost = asyncHandler(async (req, res) => {
+  const { postId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(postId)) {
+    throw new ApiError(400, 'Invalid post ID format');
+  }
+
+  const deletedPost = await posts.findByIdAndDelete(postId);
+
+  if (!deletedPost) {
+    throw new ApiError(404, 'Post not found');
+  }
+
+  return res.status(200).json(
+    new ApiResponse(200, 'Post deleted successfully', {})
+  );
+});
+
+export const updatePost = asyncHandler(async (req, res) => {
+  const { postId } = req.params;
+  const { content } = req.body;
+
+  if (!content?.trim()) {
+    throw new ApiError(400, 'Content is required');
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(postId)) {
+    throw new ApiError(400, 'Invalid post ID format');
+  }
+
+  const updatedPost = await posts.findByIdAndUpdate(
+    postId,
+    { $set: { content: content.trim() } },
+    { new: true, runValidators: true }
+  );
+
+  if (!updatedPost) {
+    throw new ApiError(404, 'Post not found');
+  }
+
+  return res.status(200).json(
+    new ApiResponse(200, 'Post updated successfully', updatedPost)
+  );
+});
+
+export const likePost = asyncHandler(async (req, res) => {
+  const { postId } = req.params;
+  const { userId } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(postId) || !mongoose.Types.ObjectId.isValid(userId)) {
+    throw new ApiError(400, 'Invalid ID format');
+  }
+
+  const updatedPost = await posts.findByIdAndUpdate(
+    postId,
+    { 
+      $addToSet: { upvotes: userId },
+      $pull: { downvotes: userId }
+    },
+    { new: true }
+  );
+
+  if (!updatedPost) {
+    throw new ApiError(404, 'Post not found');
+  }
+
+  return res.status(200).json(
+    new ApiResponse(200, 'Post liked successfully', updatedPost)
+  );
+});
+
+export const unlikePost = asyncHandler(async (req, res) => {
+  const { postId } = req.params;
+  const { userId } = req.body;
+
+  if (!mongoose.Types.ObjectId.isValid(postId) || !mongoose.Types.ObjectId.isValid(userId)) {
+    throw new ApiError(400, 'Invalid ID format');
+  }
+
+  const updatedPost = await posts.findByIdAndUpdate(
+    postId,
+    { $pull: { upvotes: userId } },
+    { new: true }
+  );
+
+  if (!updatedPost) {
+    throw new ApiError(404, 'Post not found');
+  }
+
+  return res.status(200).json(
+    new ApiResponse(200, 'Post unliked successfully', updatedPost)
+  );
+});
+
+export const getTrendingPosts = asyncHandler(async (req, res) => {
+  const trendingPosts = await posts.aggregate([
+    {
+      $addFields: {
+        score: {
+          $add: [
+            { $size: "$upvotes" },
+            { $multiply: [{ $size: "$comments" }, 2] }
+          ]
+        }
+      }
+    },
+    { $sort: { score: -1 } },
+    { $limit: 10 }
+  ]);
+
+  return res.status(200).json(
+    new ApiResponse(200, 'Trending posts fetched successfully', trendingPosts)
+  );
+});
+
+export const reportPost = asyncHandler(async (req, res) => {
+  const { postId, userId, reason } = req.body;
+
+  if (!reason?.trim()) {
+    throw new ApiError(400, 'Reason is required for reporting');
+  }
+
+  // Here you might want to create a separate collection for reports
+  // For now, we'll just acknowledge the report
+  return res.status(200).json(
+    new ApiResponse(200, 'Post reported successfully', {})
+  );
+});

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import multer from "multer";
-import { registerUser,loginUser } from "../controllers/user.controller.js";
+import { registerUser,loginUser,getUserProfile,getUserStats } from "../controllers/user.controller.js";
 import { ApiError } from "../utils/ApiError.js";
 import { upload } from "../middleware/multer.middleware.js";
 
@@ -27,5 +27,8 @@ router.route("/register").post((req, res, next) => {
 
 // user login
 router.route("/login").post(loginUser)
+router.route("/profile/:userId").get(getUserProfile);
+router.route("/profile/update/:userId").patch(getUserProfile);
+router.route("/stats/:userId").get(getUserStats);
 
 export default router;
