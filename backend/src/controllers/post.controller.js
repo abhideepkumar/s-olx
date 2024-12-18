@@ -76,13 +76,14 @@ export const getPosts = asyncHandler(async (req, res) => {
     .select('-comments')
     .sort({ createdAt: -1 })
     .limit(10)
-    .populate('user', 'name usn profile_url')
+    .populate('user', 'name clg_name profile_url')
     //? no need to fetch comments here
     // .populate('comments.user', 'name usn profile_url')
     .lean();
   if (!allPosts) {
     throw new ApiError(400, 'No posts found');
   }
+  console.log("Posts: ",allPosts)
   // If no posts found, return empty array instead of throwing error
   return res.status(200).json(new ApiResponse(200, 'Posts fetched successfully', allPosts));
 });

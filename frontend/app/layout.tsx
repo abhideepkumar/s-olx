@@ -4,6 +4,7 @@ import './globals.css'
 import { SideNav } from '@/components/side-nav'
 import { MobileNav } from '@/components/mobile-nav'
 import { SearchBar } from '@/components/search-bar'
+import toast, { Toaster } from 'react-hot-toast';
 
 const poppins = Poppins({ 
   weight: ['400', '500', '600', '700'],
@@ -24,6 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${poppins.className} bg-gray-50 text-gray-900`}>
+      <Toaster />
         <div className="flex">
           <SideNav className="hidden lg:block" />
           <div className="flex-1">

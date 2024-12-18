@@ -11,6 +11,7 @@ import mongoose from 'mongoose';
 
 // create product
 export const CreateProduct = asyncHandler(async (req, res) => {
+  console.log("running")
   const { title, description, more_info, price, condition, tags, category, seller } = req.body;
   console.log('Received data:', { title, description, more_info, price, condition, tags, category, seller });
   //* validate fields
@@ -75,7 +76,7 @@ export const FindProductById = asyncHandler(async (req, res) => {
 export const ProductForHomepage = asyncHandler(async (req, res) => {
   try {
     //* values allowed are asc, desc, ascending, descending, 1, and -1 for sort operator
-    const products = await product.find().sort({ createdAt: -1 }).limit(10);
+    const products = await product.find().sort({ createdAt: -1 }).limit(10).populate('seller', 'name clg_name profile_url').lean();
     console.log('homepage products: ', products);
     if (!products) {
       throw new ApiError(400, 'No products found to show');

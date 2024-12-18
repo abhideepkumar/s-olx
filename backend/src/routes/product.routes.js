@@ -8,6 +8,7 @@ const router = Router();
 
 //* create products
 router.route('/create').post((req, res, next) => {
+  console.log("Product route")
   upload.fields([{ name: 'images', maxCount: 5 }])(req, res, (err) => {
     if (err instanceof multer.MulterError) {
       // A Multer error occurred when uploading
