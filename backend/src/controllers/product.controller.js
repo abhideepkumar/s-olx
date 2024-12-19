@@ -11,7 +11,7 @@ import mongoose from 'mongoose';
 
 // create product
 export const CreateProduct = asyncHandler(async (req, res) => {
-  console.log("running")
+  console.log('running');
   const { title, description, more_info, price, condition, tags, category, seller } = req.body;
   console.log('Received data:', { title, description, more_info, price, condition, tags, category, seller });
   //* validate fields
@@ -59,13 +59,14 @@ export const FindProductById = asyncHandler(async (req, res) => {
   console.log('Product id searching for:', id);
 
   try {
-    const product = await product.findById(id);
-    if (!product) {
-      throw new ApiError(404, 'Product not found');
+    const productData = await product.findById(id).populate('seller', 'name clg_name profile_url').lean();
+    console.log('ProductData: ', productData);
+    if (!productData) {
+      throw new ApiError(404, 'Product not found for this token');
     }
-    res.status(200).json(new ApiResponse(200, 'Product found using ID', product));
+    res.status(200).json(new ApiResponse(200, 'Product found using ID', productData));
   } catch (error) {
-    console.error('Error finding product:', error);
+    console.error('Error finding product:', error.message);
     res
       .status(error.statusCode || 500)
       .json(new ApiError(error.statusCode || 500, error.message || 'An error occurred', error));
@@ -76,7 +77,12 @@ export const FindProductById = asyncHandler(async (req, res) => {
 export const ProductForHomepage = asyncHandler(async (req, res) => {
   try {
     //* values allowed are asc, desc, ascending, descending, 1, and -1 for sort operator
-    const products = await product.find().sort({ createdAt: -1 }).limit(10).populate('seller', 'name clg_name profile_url').lean();
+    const products = await product
+      .find()
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .populate('seller', 'name clg_name profile_url')
+      .lean();
     console.log('homepage products: ', products);
     if (!products) {
       throw new ApiError(400, 'No products found to show');
@@ -90,11 +96,14 @@ export const ProductForHomepage = asyncHandler(async (req, res) => {
 //* get product by search query
 export const ProductBySearch = asyncHandler(async (req, res) => {
   const { searchText } = req.query;
-  const products = await product.find({ $text: { $search: searchText } }).select('title description more_info condition category tags').limit(20);
-  if(!products){
-    return res.status(404).json(new ApiError(404, 'No Product found',products))
+  const products = await product
+    .find({ $text: { $search: searchText } })
+    .select('title description more_info condition category tags')
+    .limit(20);
+  if (!products) {
+    return res.status(404).json(new ApiError(404, 'No Product found', products));
   }
-  res.status(200).json(new ApiResponse(200, 'Product fetched successfully',products))
+  res.status(200).json(new ApiResponse(200, 'Product fetched successfully', products));
 });
 
 export const deleteProduct = asyncHandler(async (req, res) => {
@@ -110,9 +119,7 @@ export const deleteProduct = asyncHandler(async (req, res) => {
     throw new ApiError(404, 'Product not found');
   }
 
-  return res.status(200).json(
-    new ApiResponse(200, 'Product deleted successfully', {})
-  );
+  return res.status(200).json(new ApiResponse(200, 'Product deleted successfully', {}));
 });
 
 export const updateProduct = asyncHandler(async (req, res) => {
@@ -130,7 +137,7 @@ export const updateProduct = asyncHandler(async (req, res) => {
     price,
     condition,
     tags,
-    category
+    category,
   };
 
   // Handle image updates if provided
@@ -155,9 +162,7 @@ export const updateProduct = asyncHandler(async (req, res) => {
     throw new ApiError(404, 'Product not found');
   }
 
-  return res.status(200).json(
-    new ApiResponse(200, 'Product updated successfully', updatedProduct)
-  );
+  return res.status(200).json(new ApiResponse(200, 'Product updated successfully', updatedProduct));
 });
 
 export const getProductsBySeller = asyncHandler(async (req, res) => {
@@ -167,25 +172,17 @@ export const getProductsBySeller = asyncHandler(async (req, res) => {
     throw new ApiError(400, 'Invalid seller ID format');
   }
 
-  const products = await product
-    .find({ seller: sellerId })
-    .sort({ createdAt: -1 });
+  const products = await product.find({ seller: sellerId }).sort({ createdAt: -1 });
 
-  return res.status(200).json(
-    new ApiResponse(200, 'Products fetched successfully', products)
-  );
+  return res.status(200).json(new ApiResponse(200, 'Products fetched successfully', products));
 });
 
 export const getProductsByCategory = asyncHandler(async (req, res) => {
   const { category } = req.params;
 
-  const products = await product
-    .find({ category })
-    .sort({ createdAt: -1 });
+  const products = await product.find({ category }).sort({ createdAt: -1 });
 
-  return res.status(200).json(
-    new ApiResponse(200, 'Products fetched successfully', products)
-  );
+  return res.status(200).json(new ApiResponse(200, 'Products fetched successfully', products));
 });
 
 export const markProductAsSold = asyncHandler(async (req, res) => {
@@ -206,20 +203,23 @@ export const markProductAsSold = asyncHandler(async (req, res) => {
     }
 
     // Create entry in productSold collection
-    const soldProduct = await productSold.create([{
-      product: productId,
-      buyer: buyerId,
-      price_locked,
-      remark
-    }], { session });
+    const soldProduct = await productSold.create(
+      [
+        {
+          product: productId,
+          buyer: buyerId,
+          price_locked,
+          remark,
+        },
+      ],
+      { session }
+    );
 
     // Delete from products collection
     await product.findByIdAndDelete(productId).session(session);
 
     await session.commitTransaction();
-    return res.status(200).json(
-      new ApiResponse(200, 'Product marked as sold successfully', soldProduct[0])
-    );
+    return res.status(200).json(new ApiResponse(200, 'Product marked as sold successfully', soldProduct[0]));
   } catch (error) {
     await session.abortTransaction();
     throw error;
@@ -231,16 +231,14 @@ export const markProductAsSold = asyncHandler(async (req, res) => {
 export const addToWishlist = asyncHandler(async (req, res) => {
   const { productId } = req.params;
   const { userId } = req.body;
-
+console.log("wish")
   const userWishlist = await wishlist.findOneAndUpdate(
     { user: userId },
     { $addToSet: { products: productId } },
     { upsert: true, new: true }
   );
 
-  return res.status(200).json(
-    new ApiResponse(200, 'Product added to wishlist', userWishlist)
-  );
+  return res.status(200).json(new ApiResponse(200, 'Product added to wishlist', userWishlist));
 });
 
 export const getSimilarProducts = asyncHandler(async (req, res) => {
@@ -251,21 +249,18 @@ export const getSimilarProducts = asyncHandler(async (req, res) => {
     throw new ApiError(404, 'Product not found');
   }
 
-  const similarProducts = await product.find({
-    $and: [
-      { _id: { $ne: productId } },
-      {
-        $or: [
-          { category: currentProduct.category },
-          { tags: { $in: currentProduct.tags } }
-        ]
-      }
-    ]
-  }).limit(5);
+  const similarProducts = await product
+    .find({
+      $and: [
+        { _id: { $ne: productId } },
+        {
+          $or: [{ category: currentProduct.category }, { tags: { $in: currentProduct.tags } }],
+        },
+      ],
+    })
+    .limit(5);
 
-  return res.status(200).json(
-    new ApiResponse(200, 'Similar products fetched successfully', similarProducts)
-  );
+  return res.status(200).json(new ApiResponse(200, 'Similar products fetched successfully', similarProducts));
 });
 
 export const addProductReview = asyncHandler(async (req, res) => {
@@ -280,12 +275,10 @@ export const addProductReview = asyncHandler(async (req, res) => {
     product: productId,
     user: userId,
     rating,
-    review: review.trim()
+    review: review.trim(),
   });
 
-  return res.status(201).json(
-    new ApiResponse(201, 'Review added successfully', newReview)
-  );
+  return res.status(201).json(new ApiResponse(201, 'Review added successfully', newReview));
 });
 
 export const filterProducts = asyncHandler(async (req, res) => {
@@ -304,9 +297,7 @@ export const filterProducts = asyncHandler(async (req, res) => {
 
   const filteredProducts = await product.find(query).sort({ createdAt: -1 });
 
-  return res.status(200).json(
-    new ApiResponse(200, 'Products filtered successfully', filteredProducts)
-  );
+  return res.status(200).json(new ApiResponse(200, 'Products filtered successfully', filteredProducts));
 });
 
 export const removeFromWishlist = asyncHandler(async (req, res) => {
@@ -327,7 +318,22 @@ export const removeFromWishlist = asyncHandler(async (req, res) => {
     throw new ApiError(404, 'Wishlist not found for this user');
   }
 
-  return res.status(200).json(
-    new ApiResponse(200, 'Product removed from wishlist successfully', updatedWishlist)
-  );
+  return res.status(200).json(new ApiResponse(200, 'Product removed from wishlist successfully', updatedWishlist));
+});
+
+//* fetch all wishlist products
+export const getAllWishlistProducts = asyncHandler(async (req, res) => {
+  const { userId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    throw new ApiError(400, 'Invalid user ID format');
+  }
+
+  const wishlistData = await wishlist.findOne({ user: userId }).populate('products').populate('user', 'name profile_url');
+
+  if (!wishlistData) {
+    throw new ApiError(404, 'Wishlist not found for this user');
+  }
+
+  return res.status(200).json(new ApiResponse(200, 'Wishlist products fetched successfully', wishlistData.products));
 });
