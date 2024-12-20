@@ -32,10 +32,11 @@ export default function RootLayout({
             <div className="sticky top-0 z-10 bg-white shadow-sm p-4 flex items-center justify-between lg:justify-end">
               <div className="flex items-center lg:hidden">
                 <h1 className="text-2xl font-bold text-primary mr-4">S-OLX</h1>
-                <SearchBar />
+                {/* to add searchbar */}
+              {/* <SearchBar /> */}
               </div>
               <div className="hidden lg:block">
-                <SearchBar />
+                {/* <SearchBar /> */}
               </div>
             </div>
             <main className="p-4">{children}</main>

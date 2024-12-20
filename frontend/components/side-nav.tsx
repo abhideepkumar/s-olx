@@ -10,7 +10,8 @@ export function SideNav({ className }: { className?: string }) {
       <ul className="space-y-2 p-4">
         <NavItem href="/" icon={<Home size={20} />} text="Home" />
         <NavItem href="/community" icon={<Users size={20} />} text="Community" />
-        <NavItem href="/wishlist" icon={<Heart size={20} />} text="Wishlist" />
+        {/* to add */}
+        {/* <NavItem href="/wishlist" icon={<Heart size={20} />} text="Wishlist" /> */}
         <NavItem href="/profile" icon={<User size={20} />} text="Profile" />
         <NavItem href="/create-listing" icon={<PlusCircle size={20} />} text="Create Listing" />
         <NavItem href="/logout" icon={<LogOut size={20} />} text="Logout" />

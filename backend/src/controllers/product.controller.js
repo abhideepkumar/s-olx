@@ -59,7 +59,7 @@ export const FindProductById = asyncHandler(async (req, res) => {
   console.log('Product id searching for:', id);
 
   try {
-    const productData = await product.findById(id).populate('seller', 'name clg_name profile_url').lean();
+    const productData = await product.findById(id).populate('seller', 'name email clg_name profile_url').lean();
     console.log('ProductData: ', productData);
     if (!productData) {
       throw new ApiError(404, 'Product not found for this token');

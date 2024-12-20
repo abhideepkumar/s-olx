@@ -160,7 +160,8 @@ export default function CommunityPage() {
             <CardContent>
               <p className="text-gray-600">{post.content}</p>
             </CardContent>
-            <CardFooter className="flex justify-between">
+            {/* to add */}
+            {/* <CardFooter className="flex justify-between">
               <div className="flex space-x-2">
                 <Button variant="outline" size="sm" className="rounded-full" onClick={() => console.log("Upvote")}>
                   <ThumbsUp className="mr-2 h-4 w-4" />
@@ -175,7 +176,7 @@ export default function CommunityPage() {
                 <MessageSquare className="mr-2 h-4 w-4" />
                 {post.comments} Comments
               </Button>
-            </CardFooter>
+            </CardFooter> */}
           </Card>
         ))}
       </div>

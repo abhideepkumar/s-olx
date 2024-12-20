@@ -24,10 +24,7 @@ export default function LoginPage() {
     e.preventDefault();
     // TODO: Implement login logic
     try {
-      const response = await axios.post(
-        `http://localhost:8000/api/v1/users/login`,
-        formData
-      );
+      const response = await axios.post(`http://localhost:8000/api/v1/users/login`, formData);
       if (typeof window !== "undefined") {
         localStorage.setItem("token", response.data.data._id);
         localStorage.setItem("email", response.data.data.email);
@@ -39,7 +36,7 @@ export default function LoginPage() {
       router.push("/");
     } catch (error) {
       console.log(error);
-      toast.error(error?.response.data.message);
+      toast.error(error?.response?.data.message);
     }
   };
 
@@ -56,14 +53,7 @@ export default function LoginPage() {
 
         <div>
           <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            name="email"
-            type="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
+          <Input id="email" name="email" type="email" value={formData.email} onChange={handleChange} required />
         </div>
 
         <div>
@@ -81,8 +71,8 @@ export default function LoginPage() {
         <Button type="submit" className="w-full">
           Log in
         </Button>
-
-        <div className="relative">
+        {/* to add */}
+        {/* <div className="relative">
           <div className="absolute inset-0 flex items-center">
             <span className="w-full border-t" />
           </div>
@@ -91,9 +81,9 @@ export default function LoginPage() {
               Or continue with
             </span>
           </div>
-        </div>
+        </div> */}
 
-        <Button
+        {/* <Button
           type="button"
           variant="outline"
           className="w-full"
@@ -101,7 +91,7 @@ export default function LoginPage() {
         >
           <FcGoogle className="mr-2 h-4 w-4" />
           Google
-        </Button>
+        </Button> */}
       </form>
     </div>
   );

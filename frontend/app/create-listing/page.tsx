@@ -41,7 +41,8 @@ const ListingPage = () => {
         <h1 className="text-4xl font-bold">Products around you</h1>
         <AddProductDialog />
       </div>
-      <Tabs defaultValue="listed" className="space-y-4 max-w-4xl mx-auto">
+      {/* to add */}
+      {/* <Tabs defaultValue="listed" className="space-y-4 max-w-4xl mx-auto">
         <TabsList className="grid w-full grid-cols-2 max-w-2xl mx-auto ">
           <TabsTrigger value="listed">Listed Products</TabsTrigger>
           <TabsTrigger value="bought">Bought Products</TabsTrigger>
@@ -76,7 +77,7 @@ const ListingPage = () => {
             </Card>
           ))}
         </TabsContent>
-      </Tabs>
+      </Tabs> */}
     </div>
   );
 };

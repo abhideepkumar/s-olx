@@ -101,12 +101,13 @@ export default function ProfilePage() {
                 <p>{user.data.clg_name}</p>
               </div>
             </div>
-            <EditProfileDialog user={user} />
+            {/* to add */}
+            {/* <EditProfileDialog user={user} /> */}
           </div>
         </CardContent>
       </Card>
-
-      <Tabs defaultValue="listed" className="space-y-4">
+      {/* to add */}
+      {/* <Tabs defaultValue="listed" className="space-y-4">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="listed">Listed Products</TabsTrigger>
           <TabsTrigger value="bought">Bought Products</TabsTrigger>
@@ -153,7 +154,7 @@ export default function ProfilePage() {
             </Card>
           ))}
         </TabsContent>
-      </Tabs>
+      </Tabs> */}
     </div>
   );
 }

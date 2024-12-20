@@ -71,7 +71,8 @@ export function AddProductDialog() {
       console.log(response.data);
 
       // Reset form
-      e.currentTarget.reset();
+      // to add
+      // e.currentTarget.reset();
       setImages([]);
       setCondition("");
       setCategory("");

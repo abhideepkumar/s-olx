@@ -9,6 +9,8 @@ import { ImageCarousel } from "@/components/image-carousel";
 import { Heart } from "lucide-react";
 import useSWR from "swr";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const fetcher = async (url: string) => {
   const res = await fetch(url);
@@ -20,15 +22,16 @@ const fetcher = async (url: string) => {
 
 export default function ProductPage({ params }: { params: { id: string } }) {
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const router = useRouter();
 
   console.log(params.id);
   const { data: product, error, isLoading } = useSWR(`http://localhost:8000/api/v1/products/id/${params.id}`, fetcher);
   console.log(product?.data?.images);
-// when loading
+  // when loading
   if (isLoading) {
     return <div>Loading...</div>;
   }
-//error
+  //error
   if (error) {
     return <div>Error: {error.message}</div>;
   }
@@ -95,11 +98,21 @@ export default function ProductPage({ params }: { params: { id: string } }) {
         </CardContent>
       </Card>
       <div className="flex justify-end space-x-4">
-        <Button className="rounded-full">Contact Seller</Button>
-        <Button variant={isWishlisted ? "default" : "outline"} className="rounded-full" onClick={toggleWishlist}>
+        <Link
+          href={`https://mail.google.com/mail/?view=cm&fs=1&to=${product?.data?.seller.email}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="rounded-full bg-primary text-white px-4 py-2"
+        >
+          Contact Seller
+        </Link>
+        {/* to add wishlist support */}
+
+        {/* <Button className="rounded-full" onClick={() => router.push(`mailto:${product?.data?.seller.email}`)}>Contact Seller</Button> */}
+        {/* <Button variant={isWishlisted ? "default" : "outline"} className="rounded-full" onClick={toggleWishlist}>
           <Heart className={`mr-2 h-4 w-4 ${isWishlisted ? "fill-current" : ""}`} />
           {isWishlisted ? "Wishlisted" : "Add to Wishlist"}
-        </Button>
+        </Button> */}
       </div>
     </div>
   );

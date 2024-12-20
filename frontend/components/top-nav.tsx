@@ -24,10 +24,11 @@ export function TopNav() {
           </SheetContent>
         </Sheet>
         <div className="flex-1 max-w-md mx-4">
-          <div className="relative">
+          {/* to add  */}
+          {/* <div className="relative">
             <Input type="search" placeholder="Search products..." className="pl-10 pr-4 py-2 w-full" />
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-          </div>
+          </div> */}
         </div>
       </div>
     </header>
