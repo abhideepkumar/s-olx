@@ -44,76 +44,83 @@ export default function ProductPage({ params }: { params: { id: string } }) {
     setIsWishlisted(!isWishlisted);
     // TODO: Implement actual wishlist logic
   };
-
-  return (
-    <div className="space-y-6">
-      <Card>
-        <CardContent className="p-6">
-          <div className="grid md:grid-cols-2 gap-8">
-            <ImageCarousel images={product?.data?.images} />
-            <div className="space-y-6">
-              <div>
-                <h1 className="text-3xl font-bold mb-2">{product?.data?.title}</h1>
-                <p className="text-4xl font-bold text-primary">Rs {product?.data?.price}</p>
-              </div>
-              <div className="flex items-center space-x-4">
-                <Avatar className="h-12 w-12">
-                  <AvatarImage src={product?.data?.seller.profile_url} alt={product?.data?.seller.name} />
-                  <AvatarFallback>{product?.data?.seller.name}</AvatarFallback>
-                </Avatar>
+  try {
+    return (
+      <div className="space-y-6">
+        <Card>
+          <CardContent className="p-6">
+            <div className="grid md:grid-cols-2 gap-8">
+              <ImageCarousel images={product?.data?.images} />
+              <div className="space-y-6">
                 <div>
-                  <p className="font-medium">{product?.data?.seller.name}</p>
-                  <p className="text-sm text-gray-500">{product?.data?.seller.clg_name}</p>
+                  <h1 className="text-3xl font-bold mb-2">{product?.data?.title}</h1>
+                  <p className="text-4xl font-bold text-primary">Rs {product?.data?.price}</p>
                 </div>
-              </div>
-              <div>
-                <h2 className="text-lg font-semibold mb-2">Description</h2>
-                <p className="text-gray-600">{product?.data?.description}</p>
-              </div>
-              <div>
-                <h2 className="text-lg font-semibold mb-2">Additional Information</h2>
-                <p className="text-gray-600">{product?.data?.more_info}</p>
-              </div>
-              <div>
-                <h2 className="text-lg font-semibold mb-2">Details</h2>
-                <p>
-                  <strong>Condition:</strong> {product?.data?.condition}
-                </p>
-                <p>
-                  <strong>Category:</strong> {product?.data?.category}
-                </p>
-              </div>
-              <div>
-                <h2 className="text-lg font-semibold mb-2">Tags</h2>
-                <div className="flex flex-wrap gap-2">
-                  {product?.data?.tags.map((tag) => (
-                    <Badge key={tag} variant="secondary">
-                      {tag}
-                    </Badge>
-                  ))}
+                <div className="flex items-center space-x-4">
+                  <Avatar className="h-12 w-12">
+                    <AvatarImage src={product?.data?.seller?.profile_url} alt={product?.data?.seller.name} />
+                    <AvatarFallback>{product?.data?.seller.name}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-medium">{product?.data?.seller.name}</p>
+                    <p className="text-sm text-gray-500">{product?.data?.seller.clg_name}</p>
+                  </div>
+                </div>
+                <div>
+                  <h2 className="text-lg font-semibold mb-2">Description</h2>
+                  <p className="text-gray-600">{product?.data?.description}</p>
+                </div>
+                <div>
+                  <h2 className="text-lg font-semibold mb-2">Additional Information</h2>
+                  <p className="text-gray-600">{product?.data?.more_info}</p>
+                </div>
+                <div>
+                  <h2 className="text-lg font-semibold mb-2">Details</h2>
+                  <p>
+                    <strong>Condition:</strong> {product?.data?.condition}
+                  </p>
+                  <p>
+                    <strong>Category:</strong> {product?.data?.category}
+                  </p>
+                </div>
+                <div>
+                  <h2 className="text-lg font-semibold mb-2">Tags</h2>
+                  <div className="flex flex-wrap gap-2">
+                    {product?.data?.tags.map((tag) => (
+                      <Badge key={tag} variant="secondary">
+                        {tag}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
-      <div className="flex justify-end space-x-4">
-        <Link
-          href={`https://mail.google.com/mail/?view=cm&fs=1&to=${product?.data?.seller.email}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="rounded-full bg-primary text-white px-4 py-2"
-        >
-          Contact Seller
-        </Link>
-        {/* to add wishlist support */}
+          </CardContent>
+        </Card>
+        <div className="flex justify-end space-x-4">
+          <Link
+            href={`https://mail.google.com/mail/?view=cm&fs=1&to=${product?.data?.seller.email}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-full bg-primary text-white px-4 py-2"
+          >
+            Contact Seller
+          </Link>
+          {/* to add wishlist support */}
 
-        {/* <Button className="rounded-full" onClick={() => router.push(`mailto:${product?.data?.seller.email}`)}>Contact Seller</Button> */}
-        {/* <Button variant={isWishlisted ? "default" : "outline"} className="rounded-full" onClick={toggleWishlist}>
+          {/* <Button className="rounded-full" onClick={() => router.push(`mailto:${product?.data?.seller.email}`)}>Contact Seller</Button> */}
+          {/* <Button variant={isWishlisted ? "default" : "outline"} className="rounded-full" onClick={toggleWishlist}>
           <Heart className={`mr-2 h-4 w-4 ${isWishlisted ? "fill-current" : ""}`} />
           {isWishlisted ? "Wishlisted" : "Add to Wishlist"}
         </Button> */}
+        </div>
       </div>
-    </div>
-  );
+    );
+  } catch (e) {
+    return (
+      <div className="text-center py-8 text-gray-500">
+        Some data of the product is missing. So we are unable to display it
+      </div>
+    );
+  } B      
 }
