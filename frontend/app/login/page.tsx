@@ -1,16 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { FcGoogle } from "react-icons/fc";
 import axios from "axios";
 import { toast } from "react-hot-toast";
+import Link from "next/link";
 
 export default function LoginPage() {
-  const router = useRouter();
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -24,7 +23,7 @@ export default function LoginPage() {
     e.preventDefault();
     // TODO: Implement login logic
     try {
-      const response = await axios.post(`http://localhost:8000/api/v1/users/login`, formData);
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/users/login`, formData);
       if (typeof window !== "undefined") {
         localStorage.setItem("token", response.data.data._id);
         localStorage.setItem("email", response.data.data.email);
@@ -33,7 +32,7 @@ export default function LoginPage() {
         localStorage.setItem("clg_name", response.data.data.clg_name);
       }
       toast.success(response.data.message);
-      router.push("/");
+      window.location.href = "/";
     } catch (error) {
       console.log(error);
       toast.error(error?.response?.data.message);
@@ -67,7 +66,7 @@ export default function LoginPage() {
             required
           />
         </div>
-
+        <Link href="/register" className="text-muted-foreground text-sm hover:text-primary transition-colors">Don&rsquo;t have an account? Register</Link>
         <Button type="submit" className="w-full">
           Log in
         </Button>

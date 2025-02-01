@@ -38,7 +38,7 @@ export default function HomePage() {
     data: products,
     error,
     isLoading,
-  } = useSWR<ApiResponse>("http://localhost:8000/api/v1/products/homepage", fetcher);
+  } = useSWR<ApiResponse>(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/products/homepage`, fetcher);  
 
   // Loading state
   if (isLoading) {

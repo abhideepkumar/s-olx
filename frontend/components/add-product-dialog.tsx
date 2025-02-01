@@ -60,7 +60,7 @@ export function AddProductDialog() {
       formData.append("seller", localStorage.getItem("token"));
 
       // Submit data to API
-      const response = await axios.post(`http://localhost:8000/api/v1/products/create`, formData, {
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/products/create`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
