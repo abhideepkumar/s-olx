@@ -11,6 +11,19 @@ import { PlusCircle, Upload } from "lucide-react";
 import axios from "axios";
 import toast from "react-hot-toast";
 
+// Define an interface for our form elements
+interface ProductFormElements extends HTMLFormControlsCollection {
+  title: HTMLInputElement;
+  description: HTMLTextAreaElement;
+  more_info: HTMLTextAreaElement;
+  price: HTMLInputElement;
+  tags: HTMLInputElement;
+}
+
+interface ProductFormElement extends HTMLFormElement {
+  readonly elements: ProductFormElements;
+}
+
 export function AddProductDialog() {
   const [images, setImages] = useState<File[]>([]);
   const [condition, setCondition] = useState(""); // State for condition
@@ -22,44 +35,50 @@ export function AddProductDialog() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<ProductFormElement>) => {
     e.preventDefault();
 
-    // Validate required fields
+    // Validate required fields for condition and category
     if (!condition || !category) {
       toast.error("Please select condition and category");
       return;
     }
 
-    // Create FormData
+    // Create FormData instance
     const formData = new FormData();
+
     try {
       // Append images
       images.forEach((image) => {
         formData.append("images", image);
       });
 
-      // Append other form data
-      formData.append("title", e.currentTarget.title.value);
-      formData.append("description", e.currentTarget.description.value);
-      formData.append("more_info", e.currentTarget.more_info.value || "");
-      formData.append("price", e.currentTarget.price.value);
+      // Append other form data from the form elements
+      const { title, description, more_info, price, tags } = e.currentTarget.elements;
+
+      formData.append("title", title.value);
+      formData.append("description", description.value);
+      formData.append("more_info", more_info.value || "");
+      formData.append("price", price.value);
       formData.append("condition", condition);
       formData.append("category", category);
 
-      // Split tags and trim whitespace
-      const tagsInput = (e.currentTarget.tags as HTMLInputElement).value;
-      const tags = tagsInput
+      // Process and append tags (split, trim, and rejoin)
+      const tagsInput = tags.value;
+      const processedTags = tagsInput
         .split(",")
         .map((tag) => tag.trim())
         .filter((tag) => tag)
         .join(",");
-      formData.append("tags", tags);
+      formData.append("tags", processedTags);
 
-      // Add seller
-      formData.append("seller", localStorage.getItem("token"));
+      // Append seller token from local storage
+      const sellerToken = localStorage.getItem("token");
+      if (sellerToken) {
+        formData.append("seller", sellerToken);
+      }
 
-      // Submit data to API
+      // Submit data to the API endpoint
       const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/products/create`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -70,9 +89,8 @@ export function AddProductDialog() {
       toast.success("Product added successfully!");
       console.log(response.data);
 
-      // Reset form
-      // to add
-      // e.currentTarget.reset();
+      // Reset form state
+      e.currentTarget.reset();
       setImages([]);
       setCondition("");
       setCategory("");

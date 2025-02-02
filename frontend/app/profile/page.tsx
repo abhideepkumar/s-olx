@@ -1,11 +1,11 @@
 "use client";
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+// import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { EditProfileDialog } from "@/components/edit-profile-dialog";
-import { EditProductDialog } from "@/components/edit-product-dialog";
-import Image from "next/image";
+// import { EditProfileDialog } from "@/components/edit-profile-dialog";
+// import { EditProductDialog } from "@/components/edit-product-dialog";
+// import Image from "next/image";
 import useSWR from "swr";
 
 const fetcher = async (url: string) => {
@@ -26,35 +26,35 @@ export default function ProfilePage() {
   //   profile_url: '/placeholder.svg',
   // }
 
-  const listedProducts = [
-    {
-      id: 1,
-      title: "Textbook",
-      price: 25,
-      image: "/placeholder.svg",
-      description: "A great textbook",
-      condition: "good",
-      category: "books",
-      tags: ["textbook", "cs"],
-      images: ["/placeholder.svg"],
-    },
-    {
-      id: 2,
-      title: "Laptop",
-      price: 500,
-      image: "/placeholder.svg",
-      description: "Powerful laptop",
-      condition: "like-new",
-      category: "electronics",
-      tags: ["laptop", "tech"],
-      images: ["/placeholder.svg"],
-    },
-  ];
+  // const listedProducts = [
+  //   {
+  //     id: 1,
+  //     title: "Textbook",
+  //     price: 25,
+  //     image: "/placeholder.svg",
+  //     description: "A great textbook",
+  //     condition: "good",
+  //     category: "books",
+  //     tags: ["textbook", "cs"],
+  //     images: ["/placeholder.svg"],
+  //   },
+  //   {
+  //     id: 2,
+  //     title: "Laptop",
+  //     price: 500,
+  //     image: "/placeholder.svg",
+  //     description: "Powerful laptop",
+  //     condition: "like-new",
+  //     category: "electronics",
+  //     tags: ["laptop", "tech"],
+  //     images: ["/placeholder.svg"],
+  //   },
+  // ];
 
-  const boughtProducts = [
-    { id: 3, title: "Calculator", price: 15, image: "/placeholder.svg" },
-    { id: 4, title: "Backpack", price: 30, image: "/placeholder.svg" },
-  ];
+  // const boughtProducts = [
+  //   { id: 3, title: "Calculator", price: 15, image: "/placeholder.svg" },
+  //   { id: 4, title: "Backpack", price: 30, image: "/placeholder.svg" },
+  // ];
   const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
   const { data: user, error, isLoading } = useSWR(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/users/profile/${token}`, fetcher);
   console.log(user);

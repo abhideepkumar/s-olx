@@ -1,15 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
+// import { useState } from "react";
+// import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ImageCarousel } from "@/components/image-carousel";
-import { Heart } from "lucide-react";
+// import { Heart } from "lucide-react";
 import useSWR from "swr";
-import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
+// import toast from "react-hot-toast";
+// import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 const fetcher = async (url: string) => {
@@ -21,8 +21,8 @@ const fetcher = async (url: string) => {
 };
 
 export default function ProductPage({ params }: { params: { id: string } }) {
-  const [isWishlisted, setIsWishlisted] = useState(false);
-  const router = useRouter();
+  // const [isWishlisted, setIsWishlisted] = useState(false);
+  // const router = useRouter();
 
   console.log(params.id);
   const { data: product, error, isLoading } = useSWR(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/products/id/${params.id}`, fetcher);
@@ -40,10 +40,10 @@ export default function ProductPage({ params }: { params: { id: string } }) {
   if (!product || product.data.length === 0) {
     return <div className="text-center py-8 text-gray-500">No products available at the moment.</div>;
   }
-  const toggleWishlist = () => {
-    setIsWishlisted(!isWishlisted);
-    // TODO: Implement actual wishlist logic
-  };
+  // TODO: Implement actual wishlist logic
+  // const toggleWishlist = () => {
+  //   setIsWishlisted(!isWishlisted);
+  // };
   try {
     return (
       <div className="space-y-6">
@@ -86,8 +86,8 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                 <div>
                   <h2 className="text-lg font-semibold mb-2">Tags</h2>
                   <div className="flex flex-wrap gap-2">
-                    {product?.data?.tags.map((tag) => (
-                      <Badge key={tag} variant="secondary">
+                    {product?.data?.tags.map((tag:string,index:number) => (
+                      <Badge key={index} variant="secondary">
                         {tag}
                       </Badge>
                     ))}
@@ -116,11 +116,11 @@ export default function ProductPage({ params }: { params: { id: string } }) {
         </div>
       </div>
     );
-  } catch (e) {
+  } catch {
     return (
       <div className="text-center py-8 text-gray-500">
         Some data of the product is missing. So we are unable to display it
       </div>
     );
-  } B      
+  } 
 }

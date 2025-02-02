@@ -35,15 +35,16 @@ export default function LoginPage() {
       window.location.href = "/";
     } catch (error) {
       console.log(error);
-      toast.error(error?.response?.data.message);
+      toast.error("Error found");
+      // toast.error(error?.response?.data.message);
     }
   };
 
-  const handleGoogleLogin = () => {
-    // TODO: Implement Google OAuth login
-    console.log("Google login clicked");
-    toast.error("Google login is not implemented yet");
-  };
+  // TODO: Implement Google OAuth login
+  // const handleGoogleLogin = () => {
+  //   console.log("Google login clicked");
+  //   toast.error("Google login is not implemented yet");
+  // };
 
   return (
     <div className="container mx-auto px-4 py-8">

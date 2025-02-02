@@ -1,6 +1,6 @@
 'use client'
 
-import { Home, Users, Heart, User, LogOut, PlusCircle, LogIn } from 'lucide-react'
+import { Home, Users, User, LogOut, PlusCircle, LogIn } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'

@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
 import useSWR from "swr";
 import Link from "next/link";
+import toast from "react-hot-toast";
 
 type Product = {
   _id: string;
@@ -48,6 +49,7 @@ export default function HomePage() {
   // Error state
   if (error) {
     console.error("Error fetching products:", error);
+    toast.error("Failed to load products")
     return <div className="text-center py-8 text-red-500">Failed to load products. Please try again later.</div>;
   }
 

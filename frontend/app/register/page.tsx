@@ -37,8 +37,9 @@ export default function RegisterPage() {
         console.log(response.data);
         toast.error(response.data.message);
       }
-    } catch (error) {
-      toast.error(error?.response.data.message);
+    } catch {
+      toast.error("Error found");
+      // toast.error(error?.response.data.message);
     }
   };
 

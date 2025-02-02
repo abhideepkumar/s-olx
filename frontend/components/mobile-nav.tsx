@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Home, Users, Heart, User, PlusCircle, LogOut } from "lucide-react";
+import { Home, Users, User, PlusCircle, LogOut } from "lucide-react";
 
 export function MobileNav({ className }: { className?: string }) {
   return (

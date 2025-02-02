@@ -1,9 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Input } from '@/components/ui/input'
+// import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Search, Menu } from 'lucide-react'
+import { Menu } from 'lucide-react'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
 import { SideNav } from './side-nav'
 

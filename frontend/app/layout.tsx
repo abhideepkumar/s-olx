@@ -3,8 +3,8 @@ import { Poppins } from 'next/font/google'
 import './globals.css'
 import { SideNav } from '@/components/side-nav'
 import { MobileNav } from '@/components/mobile-nav'
-import { SearchBar } from '@/components/search-bar'
-import toast, { Toaster } from 'react-hot-toast';
+// import { SearchBar } from '@/components/search-bar'
+import { Toaster } from 'react-hot-toast';
 
 const poppins = Poppins({ 
   weight: ['400', '500', '600', '700'],

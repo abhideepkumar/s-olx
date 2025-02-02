@@ -6,9 +6,18 @@ import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { PencilIcon } from 'lucide-react'
 
+// Types
+interface User {
+  name: string
+  clg_name: string
+  profile_url: string
+}
+
 interface Post {
-  id: number
+  id: string
   content: string
+  user: User
+  name?: string
 }
 
 interface EditPostDialogProps {

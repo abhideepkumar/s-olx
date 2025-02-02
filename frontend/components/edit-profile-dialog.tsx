@@ -44,7 +44,8 @@ export function EditProfileDialog({ user }: EditProfileDialogProps) {
     try {
       const response = axios.put(`/api/v1/users/profile/update/${token}`, editedUser);
       console.log(response);
-      toast.success(response.data.message);
+      toast.success("Updated!");
+      // toast.success(response.data.message);
     } catch (error) {
       console.log(error);
     }
