@@ -27,6 +27,57 @@ Verification through college emails ensures a safe and exclusive environment for
 - **Hosting**: AWS / Azure.
 - **Media Storage**: Cloudinary / Amazon S3.
 
+## Docker Setup
+
+### Backend
+The backend service is containerized using Docker for easy deployment and consistency across environments.
+
+#### Building the Backend Image
+```bash
+cd backend
+docker build -t solx-backend:1.0 .
+```
+
+#### Running the Backend Container
+```bash
+# Run with environment variables from .env file
+docker run -it --name solx-backend --env-file .env -p8000:8000 solx-backend:1.0
+```
+
+#### Environment Variables
+Make sure to create a `.env` file in the backend directory with the following variables:
+```
+MONGODB_URI=your_mongodb_connection_string
+ACCESS_TOKEN_SECRET=your_access_token_secret
+ACCESS_TOKEN_EXPIRY=1d
+REFRESH_TOKEN_SECRET=your_refresh_token_secret
+REFRESH_TOKEN_EXPIRY=10d
+PORT=8000
+CORS_ORIGIN=*
+CLOUDINARY_API_NAME=api_name
+CLOUDINARY_API_KEY=api_key
+CLOUDINARY_API_SECRET=api_secret
+CLOUDINARY_DEFAULT_IMAGE=default_url
+```
+
+### Frontend
+Instructions for containerizing the frontend will be added soon.
+
+## Development Setup
+1. Clone the repository
+2. Set up backend:
+   ```bash
+   cd backend
+   npm install
+   npm start
+   ```
+3. Set up frontend:
+   ```bash
+   cd frontend
+   npm install
+   npm run dev
+   ```
+
 ## Future Opportunities
 - **Expansion**: Include trade schools and other educational institutions.
 - **Mobile App**: Develop iOS and Android applications.

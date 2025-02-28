@@ -4,7 +4,7 @@ import { validateFields } from '../utils/validator.js';
 import { user } from '../models/user.model.js';
 import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import mongoose from 'mongoose';
 import { posts } from '../models/post.model.js';
 import { product } from '../models/product.model.js';
