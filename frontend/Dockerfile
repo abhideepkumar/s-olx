@@ -4,8 +4,8 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm install
 COPY . .
-ARG NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
-ENV NEXT_PUBLIC_BACKEND_URL=$NEXT_PUBLIC_BACKEND_URL
+ARG BACKEND_URL=https://localhost:8000
+ENV BACKEND_URL=$BACKEND_URL
 RUN npm run build
 ENV NODE_ENV=production
 ENV PORT=3000

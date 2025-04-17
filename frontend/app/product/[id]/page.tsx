@@ -25,7 +25,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
   // const router = useRouter();
 
   console.log(params.id);
-  const { data: product, error, isLoading } = useSWR(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/products/id/${params.id}`, fetcher);
+  const { data: product, error, isLoading } = useSWR(`${process.env.BACKEND_URL}/api/v1/products/id/${params.id}`, fetcher);
   console.log(product?.data?.images);
   // when loading
   if (isLoading) {

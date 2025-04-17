@@ -56,7 +56,7 @@ export default function ProfilePage() {
   //   { id: 4, title: "Backpack", price: 30, image: "/placeholder.svg" },
   // ];
   const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-  const { data: user, error, isLoading } = useSWR(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/users/profile/${token}`, fetcher);
+  const { data: user, error, isLoading } = useSWR(`${process.env.BACKEND_URL}/api/v1/users/profile/${token}`, fetcher);
   console.log(user);
   // Loading state
   if (isLoading) {

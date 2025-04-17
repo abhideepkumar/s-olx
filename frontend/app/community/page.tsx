@@ -36,7 +36,7 @@ interface PostsResponse {
 }
 
 // Constants
-const API_BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL
+const API_BASE_URL = process.env.BACKEND_URL
 const API_ENDPOINTS = {
   POST_FEED: `${API_BASE_URL}/api/v1/post/post-feed`,
   CREATE_POST: `${API_BASE_URL}/api/v1/post/create`,

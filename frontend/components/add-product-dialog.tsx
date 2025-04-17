@@ -79,7 +79,7 @@ export function AddProductDialog() {
       }
 
       // Submit data to the API endpoint
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/products/create`, formData, {
+      const response = await axios.post(`${process.env.BACKEND_URL}/api/v1/products/create`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

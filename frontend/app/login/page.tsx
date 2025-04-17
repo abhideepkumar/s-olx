@@ -23,7 +23,7 @@ export default function LoginPage() {
     e.preventDefault();
     // TODO: Implement login logic
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/users/login`, formData);
+      const response = await axios.post(`${process.env.BACKEND_URL}/api/v1/users/login`, formData);
       if (typeof window !== "undefined") {
         localStorage.setItem("token", response.data.data._id);
         localStorage.setItem("email", response.data.data.email);
