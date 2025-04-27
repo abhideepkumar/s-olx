@@ -17,6 +17,7 @@ import productRoute from "./routes/product.routes.js"
 import postRoute from "./routes/post.routes.js"
 
 // routes decclaration
+app.get('/api/health', (req, res) => {res.status(200).send('OK')});
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/products", productRoute);
 app.use("/api/v1/post", postRoute);

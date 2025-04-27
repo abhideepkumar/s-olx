@@ -4,7 +4,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm install
 COPY . .
-ARG NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
+ARG NEXT_PUBLIC_BACKEND_URL=https://solx.abhideep.space
 ENV NEXT_PUBLIC_BACKEND_URL=$NEXT_PUBLIC_BACKEND_URL
 
 RUN npm run build
