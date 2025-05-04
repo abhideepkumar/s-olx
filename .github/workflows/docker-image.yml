@@ -33,7 +33,7 @@ jobs:
           context: ./frontend
           file: ./frontend/Dockerfile
           push: true
-          tags: abhieepkumar/frontend:latest
+          tags: abhideepkumar/frontend:latest
       -
         name: Build and push backend
         uses: docker/build-push-action@v6
@@ -41,4 +41,4 @@ jobs:
           context: ./backend
           file: ./backend/Dockerfile
           push: true
-          tags: abhieepkumar/backend:latest
+          tags: abhideepkumar/backend:latest
