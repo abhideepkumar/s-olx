@@ -37,9 +37,13 @@ export default function RegisterPage() {
         console.log(response.data);
         toast.error(response.data.message);
       }
-    } catch {
-      toast.error("Error found");
-      // toast.error(error?.response.data.message);
+    } catch(error: unknown) {
+      // toast.error("Error found");
+      if (axios.isAxiosError(error) && error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("An unexpected error occurred.");
+      }
     }
   };
 

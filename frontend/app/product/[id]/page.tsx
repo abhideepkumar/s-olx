@@ -11,6 +11,7 @@ import useSWR from "swr";
 // import toast from "react-hot-toast";
 // import { useRouter } from "next/navigation";
 import Link from "next/link";
+// import PeerChat from "../../../chat/PeerChat.js";
 
 const fetcher = async (url: string) => {
   const res = await fetch(url);
@@ -25,8 +26,12 @@ export default function ProductPage({ params }: { params: { id: string } }) {
   // const router = useRouter();
 
   console.log(params.id);
-  const { data: product, error, isLoading } = useSWR(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/products/id/${params.id}`, fetcher);
-  console.log(product?.data?.images);
+  const {
+    data: product,
+    error,
+    isLoading,
+  } = useSWR(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/products/id/${params.id}`, fetcher);
+  console.log(product?.data);
   // when loading
   if (isLoading) {
     return <div>Loading...</div>;
@@ -86,7 +91,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                 <div>
                   <h2 className="text-lg font-semibold mb-2">Tags</h2>
                   <div className="flex flex-wrap gap-2">
-                    {product?.data?.tags.map((tag:string,index:number) => (
+                    {product?.data?.tags.map((tag: string, index: number) => (
                       <Badge key={index} variant="secondary">
                         {tag}
                       </Badge>
@@ -97,6 +102,9 @@ export default function ProductPage({ params }: { params: { id: string } }) {
             </div>
           </CardContent>
         </Card>
+        {/* <div>
+          <PeerChat sellerEmail={product?.data?.seller.email} />
+        </div> */}
         <div className="flex justify-end space-x-4">
           <Link
             href={`https://mail.google.com/mail/?view=cm&fs=1&to=${product?.data?.seller.email}`}
@@ -122,5 +130,5 @@ export default function ProductPage({ params }: { params: { id: string } }) {
         Some data of the product is missing. So we are unable to display it
       </div>
     );
-  } 
+  }
 }

@@ -24,6 +24,7 @@ export default function LoginPage() {
     // TODO: Implement login logic
     try {
       const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/users/login`, formData);
+      // console.log("Response:", response?.data?.data);
       if (typeof window !== "undefined") {
         localStorage.setItem("token", response.data.data._id);
         localStorage.setItem("email", response.data.data.email);
@@ -32,6 +33,7 @@ export default function LoginPage() {
         localStorage.setItem("clg_name", response.data.data.clg_name);
       }
       toast.success(response.data.message);
+      // console.log(response);
       window.location.href = "/";
     } catch (error) {
       console.log(error);
