@@ -84,7 +84,6 @@ export default function AddProductForm() {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log(response);
       if (response?.status > 200 && response?.status < 300) {
         // Handle success
         toast.success("Product added successfully!");

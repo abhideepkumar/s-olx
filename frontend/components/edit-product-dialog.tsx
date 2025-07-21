@@ -55,7 +55,7 @@ export function EditProductDialog({ product }: EditProductDialogProps) {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     // TODO: Implement product update logic
-    console.log('Product updated', editedProduct, newImages)
+    // console.log('Product updated', editedProduct, newImages)
   }
 
   return (

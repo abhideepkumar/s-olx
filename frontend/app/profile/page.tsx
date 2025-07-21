@@ -57,7 +57,6 @@ export default function ProfilePage() {
   // ];
   const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
   const { data: user, error, isLoading } = useSWR(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/users/profile/${token}`, fetcher);
-  console.log(user);
   // Loading state
   if (isLoading) {
     return <div className="text-center py-8">Loading User profile...</div>;

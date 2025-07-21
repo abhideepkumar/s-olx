@@ -30,11 +30,9 @@ export default function RegisterPage() {
     try {
       const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/users/register`, formData);
       if (response.status === 201) {
-        console.log(response.data);
         toast.success(response.data.message);
         router.push("/login");
       } else {
-        console.log(response.data);
         toast.error(response.data.message);
       }
     } catch(error: unknown) {

@@ -24,14 +24,11 @@ const fetcher = async (url: string) => {
 export default function ProductPage({ params }: { params: { id: string } }) {
   // const [isWishlisted, setIsWishlisted] = useState(false);
   // const router = useRouter();
-
-  console.log(params.id);
   const {
     data: product,
     error,
     isLoading,
   } = useSWR(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/products/id/${params.id}`, fetcher);
-  console.log(product?.data);
   // when loading
   if (isLoading) {
     return <div>Loading...</div>;
@@ -55,7 +52,28 @@ export default function ProductPage({ params }: { params: { id: string } }) {
         <Card>
           <CardContent className="p-6">
             <div className="grid md:grid-cols-2 gap-8">
-              <ImageCarousel images={product?.data?.images} />
+              <div className="space-y-4 flex flex-col">
+                <div>
+                  <ImageCarousel images={product?.data?.images} />
+                </div>
+                <div className="flex justify-end space-x-4">
+                  <Link
+                    href={`https://mail.google.com/mail/?view=cm&fs=1&to=${product?.data?.seller.email}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-full bg-primary text-white px-4 py-2"
+                  >
+                    Contact Seller
+                  </Link>
+                  {/* to add wishlist support */}
+
+                  {/* <Button className="rounded-full" onClick={() => router.push(`mailto:${product?.data?.seller.email}`)}>Contact Seller</Button> */}
+                  {/* <Button variant={isWishlisted ? "default" : "outline"} className="rounded-full" onClick={toggleWishlist}>
+          <Heart className={`mr-2 h-4 w-4 ${isWishlisted ? "fill-current" : ""}`} />
+          {isWishlisted ? "Wishlisted" : "Add to Wishlist"}
+        </Button> */}
+                </div>
+              </div>
               <div className="space-y-6">
                 <div>
                   <h1 className="text-3xl font-bold mb-2">{product?.data?.title}</h1>
@@ -105,23 +123,6 @@ export default function ProductPage({ params }: { params: { id: string } }) {
         {/* <div>
           <PeerChat sellerEmail={product?.data?.seller.email} />
         </div> */}
-        <div className="flex justify-end space-x-4">
-          <Link
-            href={`https://mail.google.com/mail/?view=cm&fs=1&to=${product?.data?.seller.email}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rounded-full bg-primary text-white px-4 py-2"
-          >
-            Contact Seller
-          </Link>
-          {/* to add wishlist support */}
-
-          {/* <Button className="rounded-full" onClick={() => router.push(`mailto:${product?.data?.seller.email}`)}>Contact Seller</Button> */}
-          {/* <Button variant={isWishlisted ? "default" : "outline"} className="rounded-full" onClick={toggleWishlist}>
-          <Heart className={`mr-2 h-4 w-4 ${isWishlisted ? "fill-current" : ""}`} />
-          {isWishlisted ? "Wishlisted" : "Add to Wishlist"}
-        </Button> */}
-        </div>
       </div>
     );
   } catch {

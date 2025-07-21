@@ -38,18 +38,20 @@ export function EditProfileDialog({ user }: EditProfileDialogProps) {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit =async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // TODO: Implement profile update logic
     try {
-      const response = axios.put(`/api/v1/users/profile/update/${token}`, editedUser);
-      console.log(response);
-      toast.success("Updated!");
-      // toast.success(response.data.message);
+      const response = await axios.put(`/api/v1/users/profile/update/${token}`, editedUser);
+      toast.success(response?.data?.message);
     } catch (error) {
-      console.log(error);
+      if(axios.isAxiosError(error)){
+        toast.error(error.response?.data?.message);
+      }
+      else{
+        toast.error("An unexpected error occurred.");
+      }
     }
-    console.log("Profile updated", editedUser, newAvatar);
   };
 
   return (

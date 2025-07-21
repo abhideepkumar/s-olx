@@ -30,7 +30,7 @@ export function EditPostDialog({ post }: EditPostDialogProps) {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     // TODO: Implement post update logic
-    console.log('Post updated', { id: post.id, content: editedContent })
+    // console.log('Post updated', { id: post.id, content: editedContent })
   }
 
   return (

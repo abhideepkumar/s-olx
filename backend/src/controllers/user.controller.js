@@ -93,9 +93,24 @@ export const loginUser = asyncHandler(async (req, res) => {
     throw new ApiError(401, 'Invalid credentials');
   }
 
-  return res.status(200).json(new ApiResponse(200, 'Login successful',userdata));
+  // Generate access and refresh tokens
+  const accessToken = await userdata.generateAccessToken();
+  const refreshToken = await userdata.generateRefreshToken();
+
+  // Remove sensitive info from user data
+  const userData = userdata.toObject();
+  delete userData.password;
+
+  return res.status(200).json(
+    new ApiResponse(200, 'Login successful', {
+      user: userData,
+      accessToken,
+      refreshToken
+    })
+  );
 });
 
+//get user info
 export const getUserProfile = asyncHandler(async (req, res) => {
   const { userId } = req.params;
 

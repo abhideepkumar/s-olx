@@ -24,21 +24,26 @@ export default function LoginPage() {
     // TODO: Implement login logic
     try {
       const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/users/login`, formData);
-      // console.log("Response:", response?.data?.data);
       if (typeof window !== "undefined") {
-        localStorage.setItem("token", response.data.data._id);
-        localStorage.setItem("email", response.data.data.email);
-        localStorage.setItem("name", response.data.data.name);
-        localStorage.setItem("profile_url", response.data.data.profile_url);
-        localStorage.setItem("clg_name", response.data.data.clg_name);
+        localStorage.setItem("token", response.data.data.user._id);
+        localStorage.setItem("email", response.data.data.user.email);
+        localStorage.setItem("name", response.data.data.user.name);
+        localStorage.setItem("profile_url", response.data.data.user.profile_url);
+        localStorage.setItem("clg_name", response.data.data.user.clg_name);
+        localStorage.setItem("usn", response.data.data.user.usn);
+        localStorage.setItem("branch", response.data.data.user.branch);
+        localStorage.setItem("phone", response.data.data.user.phone);
+        localStorage.setItem("accessToken", response.data.data.accessToken)
+        localStorage.setItem("refreshToken", response.data.data.refreshToken)
       }
       toast.success(response.data.message);
-      // console.log(response);
       window.location.href = "/";
-    } catch (error) {
-      console.log(error);
-      toast.error("Error found");
-      // toast.error(error?.response?.data.message);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data?.message);
+      } else {
+        toast.error("An unexpected error occurred.");
+      }
     }
   };
 

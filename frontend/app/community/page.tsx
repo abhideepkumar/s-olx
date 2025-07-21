@@ -189,21 +189,21 @@ export default function CommunityPage() {
     )
   }
 
-  if (!posts?.data?.length) {
-    return (
-      <div className="text-center py-8 text-gray-500">
-        No posts available at the moment.
-      </div>
-    )
-  }
+  // if (!posts?.data?.length) {
+  //   return (
+  //     <div className="text-center py-8 text-gray-500">
+  //       No posts available at the moment.
+  //     </div>
+  //   )
+  // }
 
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold text-center">Community</h1>
       {user.name && <PostForm user={user} />}
       <div className="space-y-6">
-        {posts.data.map((post) => (
-          <PostCard key={post.id} post={post} currentUserName={user.name} />
+        {(posts?.data ?? []).map((post, index) => (
+          <PostCard key={index} post={post} currentUserName={user.name} />
         ))}
       </div>
     </div>
