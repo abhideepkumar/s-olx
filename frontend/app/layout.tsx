@@ -3,6 +3,7 @@ import { Poppins } from 'next/font/google'
 import './globals.css'
 import { SideNav } from '@/components/side-nav'
 import { MobileNav } from '@/components/mobile-nav'
+import OfflineIndicator from '@/components/OfflineIndicator'
 // import { SearchBar } from '@/components/search-bar'
 import { Toaster } from 'react-hot-toast';
 
@@ -43,6 +44,7 @@ export default function RootLayout({
           </div>
         </div>
         <MobileNav className="lg:hidden fixed bottom-0 left-0 right-0" />
+        <OfflineIndicator />
       </body>
     </html>
   )

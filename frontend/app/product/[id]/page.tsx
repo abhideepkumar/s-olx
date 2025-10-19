@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ImageCarousel } from "@/components/image-carousel";
 import { ProductRecommendations } from "@/components/product-recommendations";
+import ChatButton from "@/components/ChatButton";
 import useSWR from "swr";
 import Link from "next/link";
 
@@ -61,15 +62,25 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                   <h1 className="text-3xl font-bold mb-2">{product?.data?.title}</h1>
                   <p className="text-4xl font-bold text-primary">Rs {product?.data?.price}</p>
                 </div>
-                <div className="flex items-center space-x-4">
-                  <Avatar className="h-12 w-12">
-                    <AvatarImage src={product?.data?.seller?.profile_url} alt={product?.data?.seller.name} />
-                    <AvatarFallback>{product?.data?.seller.name}</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-medium">{product?.data?.seller.name}</p>
-                    <p className="text-sm text-gray-500">{product?.data?.seller.clg_name}</p>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <Avatar className="h-12 w-12">
+                      <AvatarImage src={product?.data?.seller?.profile_url} alt={product?.data?.seller.name} />
+                      <AvatarFallback>{product?.data?.seller.name}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="font-medium">{product?.data?.seller.name}</p>
+                      <p className="text-sm text-gray-500">{product?.data?.seller.clg_name}</p>
+                    </div>
                   </div>
+                  <ChatButton
+                    productId={params.id}
+                    sellerId={product?.data?.seller._id}
+                    sellerEmail={product?.data?.seller.email}
+                    productTitle={product?.data?.title}
+                    productPrice={product?.data?.price}
+                    productImages={product?.data?.images}
+                  />
                 </div>
                 <div>
                   <h2 className="text-lg font-semibold mb-2">Description</h2>

@@ -46,6 +46,10 @@ app.use(cookieParser());
 import userRouter from "./routes/user.routes.js";
 import productRoute from "./routes/product.routes.js"
 import postRoute from "./routes/post.routes.js"
+import messageBatchRoute from "./routes/message-batch.routes.js"
+import messageRoute from "./routes/message.routes.js"
+import messagePersistenceRoute from "./routes/message-persistence.routes.js"
+import conversationRoute from "./routes/conversation.routes.js"
 import { ApiError } from "./utils/ApiError.js";
 
 // routes decclaration
@@ -59,5 +63,9 @@ app.use("/api/v1/users/register", authLimiter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/products", productRoute);
 app.use("/api/v1/post", postRoute);
+app.use("/api/v1/message-batch", messageBatchRoute);
+app.use("/api/v1/messages", messageRoute);
+app.use("/api/v1/message-persistence", messagePersistenceRoute);
+app.use("/api/v1/conversations", conversationRoute);
 
 export { app };
