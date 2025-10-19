@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { CreateProduct, FindProductById, ProductForHomepage, ProductBySearch, markProductAsSold, addToWishlist, removeFromWishlist, getSimilarProducts, addProductReview, filterProducts,deleteProduct,updateProduct,getProductsByCategory,getProductsBySeller, getAllWishlistProducts } from '../controllers/product.controller.js';
+import { CreateProduct, FindProductById, ProductForHomepage, ProductBySearch, markProductAsSold, addToWishlist, removeFromWishlist, getSimilarProducts, addProductReview, filterProducts,deleteProduct,updateProduct,getProductsByCategory,getProductsBySeller, getAllWishlistProducts, semanticSearch, getRecommendations, batchGenerateEmbeddings } from '../controllers/product.controller.js';
 import multer from 'multer';
 import { upload } from '../middleware/multer.middleware.js';
 import { ApiError } from '../utils/ApiError.js';
@@ -44,5 +44,10 @@ router.route("/similar/:productId").get(getSimilarProducts);
 router.route("/review/:productId").post(addProductReview);
 router.route("/filter").get(filterProducts);
 router.route('/wishlist/:userId').get(getAllWishlistProducts);
+
+//* AI-powered semantic search routes
+router.route('/search/semantic').get(semanticSearch);
+router.route('/recommendations/:productId').get(getRecommendations);
+router.route('/admin/batch-embeddings').post(batchGenerateEmbeddings);
 
 export default router;

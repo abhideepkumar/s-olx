@@ -1,17 +1,12 @@
 "use client";
 
-// import { useState } from "react";
-// import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ImageCarousel } from "@/components/image-carousel";
-// import { Heart } from "lucide-react";
+import { ProductRecommendations } from "@/components/product-recommendations";
 import useSWR from "swr";
-// import toast from "react-hot-toast";
-// import { useRouter } from "next/navigation";
 import Link from "next/link";
-// import PeerChat from "../../../chat/PeerChat.js";
 
 const fetcher = async (url: string) => {
   const res = await fetch(url);
@@ -22,8 +17,6 @@ const fetcher = async (url: string) => {
 };
 
 export default function ProductPage({ params }: { params: { id: string } }) {
-  // const [isWishlisted, setIsWishlisted] = useState(false);
-  // const router = useRouter();
   const {
     data: product,
     error,
@@ -42,10 +35,6 @@ export default function ProductPage({ params }: { params: { id: string } }) {
   if (!product || product.data.length === 0) {
     return <div className="text-center py-8 text-gray-500">No products available at the moment.</div>;
   }
-  // TODO: Implement actual wishlist logic
-  // const toggleWishlist = () => {
-  //   setIsWishlisted(!isWishlisted);
-  // };
   try {
     return (
       <div className="space-y-6">
@@ -65,13 +54,6 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                   >
                     Contact Seller
                   </Link>
-                  {/* to add wishlist support */}
-
-                  {/* <Button className="rounded-full" onClick={() => router.push(`mailto:${product?.data?.seller.email}`)}>Contact Seller</Button> */}
-                  {/* <Button variant={isWishlisted ? "default" : "outline"} className="rounded-full" onClick={toggleWishlist}>
-          <Heart className={`mr-2 h-4 w-4 ${isWishlisted ? "fill-current" : ""}`} />
-          {isWishlisted ? "Wishlisted" : "Add to Wishlist"}
-        </Button> */}
                 </div>
               </div>
               <div className="space-y-6">
@@ -120,9 +102,17 @@ export default function ProductPage({ params }: { params: { id: string } }) {
             </div>
           </CardContent>
         </Card>
-        {/* <div>
-          <PeerChat sellerEmail={product?.data?.seller.email} />
-        </div> */}
+        
+        {/* AI-Powered Recommendations */}
+        <ProductRecommendations 
+          productId={params.id}
+          title="You Might Also Like"
+          limit={4}
+          threshold={0.4}
+          excludeSameSeller={true}
+          className="mt-8"
+        />
+        
       </div>
     );
   } catch {

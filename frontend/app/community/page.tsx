@@ -75,7 +75,6 @@ const PostForm = ({ user }: { user: ReturnType<typeof useUser> }) => {
       mutate(API_ENDPOINTS.POST_FEED)
       setNewPost('')
     } catch (error) {
-      console.error('Error creating post:', error)
       toast.error('Failed to create post.')
     }
   }
@@ -181,7 +180,6 @@ export default function CommunityPage() {
   }
 
   if (error) {
-    console.error('Error fetching posts:', error)
     return (
       <div className="text-center py-8 text-red-500">
         Failed to load posts. Please try again later.

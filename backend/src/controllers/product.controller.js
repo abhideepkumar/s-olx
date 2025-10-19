@@ -7,13 +7,13 @@ import { product } from '../models/product.model.js';
 import { productSold } from '../models/product.sold.model.js';
 import { wishlist } from '../models/wishlist.model.js';
 import { productReview } from '../models/product.review.model.js';
+import { semanticSearchService } from '../services/semantic-search.service.js';
+import { embeddingService } from '../services/embedding.service.js';
 import mongoose from 'mongoose';
 
 // create product
 export const CreateProduct = asyncHandler(async (req, res) => {
-  console.log('running');
   const { title, description, more_info, price, condition, tags, category, seller } = req.body;
-  console.log('Received data:', { title, description, more_info, price, condition, tags, category, seller });
   //* validate fields
   validateFields({ title, description, price, condition, tags, category, seller });
   //* check for images being empty or not
@@ -43,12 +43,16 @@ export const CreateProduct = asyncHandler(async (req, res) => {
       seller,
     };
 
-    console.log('Payload:', payload);
     //* upload the new product to mongodb
     const newProduct = await product.create(payload);
+    
+    //* Generate embedding for semantic search (async, don't wait)
+    semanticSearchService.generateProductEmbedding(newProduct).catch(() => {
+      // Silently handle embedding generation errors
+    });
+    
     res.status(201).json(new ApiResponse(201, 'New Product listed successfully', newProduct));
   } catch (error) {
-    console.error('Error uploading product:', error);
     res.status(400).json(new ApiError(400, 'Error in uploading product details', error));
   }
 });
@@ -56,17 +60,14 @@ export const CreateProduct = asyncHandler(async (req, res) => {
 // get product by id
 export const FindProductById = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  console.log('Product id searching for:', id);
 
   try {
     const productData = await product.findById(id).populate('seller', 'name email clg_name profile_url').lean();
-    console.log('ProductData: ', productData);
     if (!productData) {
       throw new ApiError(404, 'Product not found for this token');
     }
     res.status(200).json(new ApiResponse(200, 'Product found using ID', productData));
   } catch (error) {
-    console.error('Error finding product:', error.message);
     res
       .status(error.statusCode || 500)
       .json(new ApiError(error.statusCode || 500, error.message || 'An error occurred', error));
@@ -83,7 +84,6 @@ export const ProductForHomepage = asyncHandler(async (req, res) => {
       .limit(10)
       .populate('seller', 'name clg_name profile_url')
       .lean();
-    console.log('homepage products: ', products);
     if (!products) {
       throw new ApiError(400, 'No products found to show');
     }
@@ -162,6 +162,11 @@ export const updateProduct = asyncHandler(async (req, res) => {
     throw new ApiError(404, 'Product not found');
   }
 
+  //* Update embedding for semantic search (async, don't wait)
+  semanticSearchService.updateProductEmbedding(productId).catch(() => {
+    // Silently handle embedding update errors
+  });
+
   return res.status(200).json(new ApiResponse(200, 'Product updated successfully', updatedProduct));
 });
 
@@ -231,7 +236,6 @@ export const markProductAsSold = asyncHandler(async (req, res) => {
 export const addToWishlist = asyncHandler(async (req, res) => {
   const { productId } = req.params;
   const { userId } = req.body;
-console.log("wish")
   const userWishlist = await wishlist.findOneAndUpdate(
     { user: userId },
     { $addToSet: { products: productId } },
@@ -337,3 +341,85 @@ export const getAllWishlistProducts = asyncHandler(async (req, res) => {
 
   return res.status(200).json(new ApiResponse(200, 'Wishlist products fetched successfully', wishlistData.products));
 });
+
+//* Semantic Search - AI-powered search using embeddings
+export const semanticSearch = asyncHandler(async (req, res) => {
+  const { 
+    query, 
+    limit = 20, 
+    threshold = 0.3, 
+    category, 
+    minPrice, 
+    maxPrice, 
+    condition 
+  } = req.query;
+
+  if (!query || query.trim().length === 0) {
+    throw new ApiError(400, 'Search query is required');
+  }
+
+  const searchOptions = {
+    limit: parseInt(limit),
+    threshold: parseFloat(threshold),
+    category,
+    minPrice: minPrice ? parseFloat(minPrice) : null,
+    maxPrice: maxPrice ? parseFloat(maxPrice) : null,
+    condition,
+  };
+
+  const results = await semanticSearchService.semanticSearch(query, searchOptions);
+
+  return res.status(200).json(
+    new ApiResponse(200, 'Semantic search completed successfully', {
+      query,
+      results,
+      total: results.length,
+      searchOptions,
+    })
+  );
+});
+
+//* Get AI-powered product recommendations
+export const getRecommendations = asyncHandler(async (req, res) => {
+  const { productId } = req.params;
+  const { 
+    limit = 5, 
+    threshold = 0.4, 
+    excludeSameSeller = true 
+  } = req.query;
+
+  if (!mongoose.Types.ObjectId.isValid(productId)) {
+    throw new ApiError(400, 'Invalid product ID format');
+  }
+
+  const recommendationOptions = {
+    limit: parseInt(limit),
+    threshold: parseFloat(threshold),
+    excludeSameSeller: excludeSameSeller === 'true',
+  };
+
+  const recommendations = await semanticSearchService.getRecommendations(
+    productId, 
+    recommendationOptions
+  );
+
+  return res.status(200).json(
+    new ApiResponse(200, 'Recommendations fetched successfully', {
+      productId,
+      recommendations,
+      total: recommendations.length,
+      options: recommendationOptions,
+    })
+  );
+});
+
+
+//* Batch generate embeddings for all products (admin endpoint)
+export const batchGenerateEmbeddings = asyncHandler(async (req, res) => {
+  const result = await semanticSearchService.batchGenerateEmbeddings();
+  
+  return res.status(200).json(
+    new ApiResponse(200, 'Batch embedding generation completed', result)
+  );
+});
+
