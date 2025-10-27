@@ -1,7 +1,7 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import { rateLimit } from 'express-rate-limit'
+import { rateLimit, ipKeyGenerator } from 'express-rate-limit'
 
 // General rate limiter
 const limiter = rateLimit({
@@ -16,7 +16,7 @@ const limiter = rateLimit({
         res.status(429).json(new ApiError(429, 'Too many requests, please try again later.'));
     },
     keyGenerator: (req) => {
-        return `${req.ip}-${req.originalUrl}`;
+        return `${ipKeyGenerator(req)}-${req.originalUrl}`;
     },
 })
 
@@ -46,7 +46,11 @@ app.use(cookieParser());
 import userRouter from "./routes/user.routes.js";
 import productRoute from "./routes/product.routes.js"
 import postRoute from "./routes/post.routes.js"
+import chatRouter from "./routes/chat.routes.js"
 import { ApiError } from "./utils/ApiError.js";
+
+// Initialize persistence service
+import "./services/persistence.service.js";
 
 // routes decclaration
 app.get('/api/health', (req, res) => {res.status(200).send('OK')});
@@ -59,5 +63,6 @@ app.use("/api/v1/users/register", authLimiter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/products", productRoute);
 app.use("/api/v1/post", postRoute);
+app.use("/api/v1/chat", chatRouter);
 
 export { app };

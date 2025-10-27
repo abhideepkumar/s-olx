@@ -22,6 +22,7 @@ export default function ProductPage({ params }: { params: { id: string } }) {
     error,
     isLoading,
   } = useSWR(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/products/id/${params.id}`, fetcher);
+  const userId = typeof window !== "undefined" ? localStorage.getItem("token") : null;
   // when loading
   if (isLoading) {
     return <div>Loading...</div>;
@@ -45,16 +46,16 @@ export default function ProductPage({ params }: { params: { id: string } }) {
                 <div>
                   <ImageCarousel images={product?.data?.images} />
                 </div>
+              {product?.data?.seller?._id !== userId && (
                 <div className="flex justify-end space-x-4">
                   <Link
-                    href={`https://mail.google.com/mail/?view=cm&fs=1&to=${product?.data?.seller.email}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    href={`/chat?id=${product?.data?.seller._id}`}
                     className="rounded-full bg-primary text-white px-4 py-2"
                   >
                     Contact Seller
                   </Link>
                 </div>
+              )}
               </div>
               <div className="space-y-6">
                 <div>
