@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addMessage, getMessages, updateMessageStatus, updateEscrowStatus, triggerBatchProcessing, getPendingMessagesCount, getPendingMessages } from "../controllers/chat.controller.js";
+import { addMessage, getMessages, updateMessageStatus, updateEscrowStatus, triggerBatchProcessing, getPendingMessagesCount, getPendingMessages, getChats     } from "../controllers/chat.controller.js";
 
 const router = Router();
 
@@ -20,4 +20,6 @@ router.route("/batch/trigger").post(triggerBatchProcessing);
 router.route("/pending/count").get(getPendingMessagesCount);
 router.route("/pending/messages").get(getPendingMessages);
 
+// Get chats
+router.route("/chats").get(getChats);
 export default router;

@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Send, ArrowLeft, MessageCircle} from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import socketClient from "@/lib/socket-client";
 
 interface Message {
@@ -43,7 +44,16 @@ interface User {
   profile_url: string;
 }
 
+interface Conversation {
+  conversationId: string;
+  otherUser: User;
+  lastMessage: Message;
+  unreadCount: number;
+  timestamp: string;
+}
+
 export default function ChatPage() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const receiverId = searchParams.get("id");
 
@@ -61,6 +71,8 @@ export default function ChatPage() {
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [escrowEnabled, setEscrowEnabled] = useState(false);
   const [escrowAmount, setEscrowAmount] = useState<string>("");
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [conversationsLoading, setConversationsLoading] = useState(false);
 
   // Get current user from localStorage and connect to socket
   useEffect(() => {
@@ -101,6 +113,41 @@ export default function ChatPage() {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
+  const fetchConversations = useCallback(async () => {
+    if (!currentUser) return;
+
+    setConversationsLoading(true);
+    try {
+      const token = localStorage.getItem("accessToken");
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/chat/chats?userId=${currentUser._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        setConversations(data.data || []);
+      } else {
+        console.error("Failed to fetch conversations");
+      }
+    } catch (error) {
+      console.error("Error fetching conversations:", error);
+    } finally {
+      setConversationsLoading(false);
+    }
+  }, [currentUser]);
+
+  // Fetch conversations when currentUser is available
+  useEffect(() => {
+    if (currentUser) {
+      fetchConversations();
+    }
+  }, [currentUser, fetchConversations]);
 
   const fetchUserInfo = async (userId: string) => {
     try {
@@ -347,15 +394,19 @@ export default function ChatPage() {
     }
   };
 
-  if (!receiverId) {
+  const handleConversationClick = (conversationId: string) => {
+    router.push(`/chat?id=${conversationId}`);
+  };
+
+  if (!receiverId && conversations.length === 0 && !conversationsLoading) {
     return (
-      <div className="max-w-4xl mx-auto p-6">
+      <div className="max-w-7xl mx-auto p-6">
         <Card>
           <CardContent className="p-6 text-center">
             <MessageCircle className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-            <h2 className="text-xl font-semibold mb-2">No Chat Selected</h2>
+            <h2 className="text-xl font-semibold mb-2">No Chats Yet</h2>
             <p className="text-gray-600 mb-4">
-              Please select a seller to start a conversation.
+              Start a conversation with a seller.
             </p>
             <Link href="/">
               <Button variant="outline">
@@ -388,8 +439,85 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <Card className="h-[600px] flex flex-col">
+    <div className="max-w-7xl mx-auto p-6">
+      <div className="flex gap-4 h-[600px]">
+        {/* Conversations Sidebar */}
+        <div className="w-80 flex-shrink-0">
+          <Card className="h-full flex flex-col">
+            <div className="border-b p-4">
+              <div className="flex items-center justify-between mb-2">
+                <h2 className="font-semibold text-lg">Conversations</h2>
+                <Link href="/">
+                  <Button variant="ghost" size="sm">
+                    <ArrowLeft className="w-4 h-4" />
+                  </Button>
+                </Link>
+              </div>
+            </div>
+            <div className="flex-1 overflow-y-auto">
+              {conversationsLoading ? (
+                <div className="text-center text-gray-500 py-8">
+                  <MessageCircle className="w-8 h-8 mx-auto mb-2 animate-spin" />
+                  <p>Loading conversations...</p>
+                </div>
+              ) : conversations.length === 0 ? (
+                <div className="text-center text-gray-500 py-8 px-4">
+                  <MessageCircle className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                  <p>No conversations yet</p>
+                </div>
+              ) : (
+                <div className="divide-y">
+                  {conversations.map((conversation) => (
+                    <button
+                      key={conversation.conversationId}
+                      onClick={() => handleConversationClick(conversation.conversationId)}
+                      className={`w-full p-4 hover:bg-gray-50 transition-colors ${
+                        receiverId === conversation.conversationId ? 'bg-blue-50' : ''
+                      }`}
+                    >
+                      <div className="flex items-start space-x-3">
+                        <Avatar className="h-10 w-10">
+                          <AvatarImage src={conversation.otherUser.profile_url} alt={conversation.otherUser.name} />
+                          <AvatarFallback>{conversation.otherUser.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between mb-1">
+                            <p className="font-medium text-sm truncate">{conversation.otherUser.name}</p>
+                            {conversation.unreadCount > 0 && (
+                              <span className="bg-primary text-primary-foreground text-xs rounded-full px-2 py-0.5 ml-2">
+                                {conversation.unreadCount}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-xs text-gray-500 truncate">
+                            {conversation.lastMessage.content.text}
+                          </p>
+                          <p className="text-xs text-gray-400 mt-1">
+                            {new Date(conversation.lastMessage.timestamp).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </Card>
+        </div>
+
+        {/* Chat Area */}
+        {!receiverId ? (
+          <Card className="flex-1 flex items-center justify-center">
+            <CardContent className="text-center">
+              <MessageCircle className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+              <h2 className="text-xl font-semibold mb-2">No Chat Selected</h2>
+              <p className="text-gray-600">
+                Select a conversation to start chatting.
+              </p>
+            </CardContent>
+          </Card>
+        ) : (
+        <Card className="flex-1 flex flex-col">
         {/* Header */}
         <div className="border-b p-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
@@ -556,7 +684,9 @@ export default function ChatPage() {
             </Button>
           </div>
         </div>
-      </Card>
+        </Card>
+        )}
+      </div>
     </div>
   );
 }

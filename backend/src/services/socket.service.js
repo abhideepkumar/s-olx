@@ -125,7 +125,7 @@ class SocketService {
           const receiverSocketId = this.connectedUsers.get(receiverId);
           
           if (receiverSocketId) {
-            // Send message directly to receiver
+            // Receiver is online - send message directly to receiver
             this.io.to(receiverSocketId).emit('receive_message', {
               ...messageData,
               senderId: { _id: senderId },
@@ -141,7 +141,16 @@ class SocketService {
             
             console.log(`Message sent via socket from ${senderId} to ${receiverId}`);
           } else {
-            // Receiver is offline, just confirm to sender
+            // Receiver is offline - save message directly to database
+            try {
+              const { chat } = await import('../models/chat.model.js');
+              await chat.create(messageData);
+              console.log(`Message saved to database for offline user ${receiverId}`);
+            } catch (error) {
+              console.error('Error saving message to database:', error);
+            }
+            
+            // Confirm to sender
             socket.emit('message_sent', {
               ...messageData,
               senderId: { _id: senderId },

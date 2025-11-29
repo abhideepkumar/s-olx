@@ -198,3 +198,68 @@ export const getPendingMessages = asyncHandler(async (req, res) => {
     throw new ApiError(500, `Error getting pending messages: ${error.message}`);
   }
 });
+
+
+export const getChats = asyncHandler(async (req, res) => {
+  const { userId } = req.query;
+
+  if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+    throw new ApiError(400, 'Valid userId is required');
+  }
+
+  try {
+    // Get all chats where the user is either sender or receiver
+    const messages = await chat.find({
+      $or: [
+        { senderId: userId },
+        { receiverId: userId }
+      ]
+    })
+    .populate('senderId', 'name email profile_url')
+    .populate('receiverId', 'name email profile_url')
+    .sort({ timestamp: -1 });
+
+    // Group messages by conversation partner
+    const conversationMap = new Map();
+
+    messages.forEach(message => {
+      // Determine the other user in the conversation
+      const otherUser = message.senderId._id.toString() === userId 
+        ? message.receiverId 
+        : message.senderId;
+      
+      const conversationId = otherUser._id.toString();
+
+      if (!conversationMap.has(conversationId)) {
+        conversationMap.set(conversationId, {
+          conversationId,
+          otherUser: {
+            _id: otherUser._id,
+            name: otherUser.name,
+            email: otherUser.email,
+            profile_url: otherUser.profile_url
+          },
+          lastMessage: message,
+          unreadCount: 0,
+          timestamp: message.timestamp
+        });
+      }
+
+      // Check if message is unread
+      if (message.status === 'pending' && message.receiverId._id.toString() === userId) {
+        conversationMap.get(conversationId).unreadCount++;
+      }
+    });
+
+    // Convert map to array and sort by timestamp
+    const conversations = Array.from(conversationMap.values()).sort(
+      (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+    );
+
+    return res.status(200).json(
+      new ApiResponse(200, 'Chats fetched successfully', conversations)
+    );
+  } catch (error) {
+    throw new ApiError(500, `Error getting chats: ${error.message}`);
+  }
+});

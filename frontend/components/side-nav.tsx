@@ -1,6 +1,6 @@
 'use client'
 
-import { Home, Users, User, LogOut, LogIn, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Home, Users, User, LogOut, LogIn, ChevronLeft, ChevronRight, MessageCircle } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
@@ -14,6 +14,8 @@ type SideNavProps = {
 const getNavItems = (isLoggedIn: boolean) => [
   { href: '/', icon: <Home className="w-5 h-5" />, text: 'Home' },
   { href: '/community', icon: <Users className="w-5 h-5" />, text: 'Community' },
+  //for  chat
+  { href: '/chat', icon: <MessageCircle className="w-5 h-5" />, text: 'Chat', requiresAuth: true },
   { href: '/profile', icon: <User className="w-5 h-5" />, text: 'Profile', requiresAuth: true },
   ...(isLoggedIn 
     ? [{ href: '/logout', icon: <LogOut className="w-5 h-5" />, text: 'Logout' }]

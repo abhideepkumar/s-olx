@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { PlusCircle, Upload, X } from "lucide-react";
+import { PlusCircle, Upload, X, Eye, Trash2 } from "lucide-react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { Spinner } from "@/components/ui/spinner";
@@ -31,14 +31,48 @@ interface AddProductFormProps {
 export default function AddProductForm({ onProductAdded }: AddProductFormProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [images, setImages] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const [condition, setCondition] = useState("");
   const [category, setCategory] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      setImages(Array.from(e.target.files));
+      const files = Array.from(e.target.files);
+      setImages(files);
+      
+      // Create previews
+      const previews = files.map(file => URL.createObjectURL(file));
+      setImagePreviews(previews);
     }
+  };
+
+  const handleRemoveImage = (index: number) => {
+    const newImages = images.filter((_, i) => i !== index);
+    const newPreviews = imagePreviews.filter((_, i) => i !== index);
+    
+    // Revoke the old URL to free memory
+    URL.revokeObjectURL(imagePreviews[index]);
+    
+    setImages(newImages);
+    setImagePreviews(newPreviews);
+    
+    // Update file input
+    const dataTransfer = new DataTransfer();
+    newImages.forEach(file => dataTransfer.items.add(file));
+    const input = document.getElementById("images") as HTMLInputElement;
+    if (input) {
+      input.files = dataTransfer.files;
+    }
+  };
+
+  const handleViewImage = (index: number) => {
+    setSelectedImageIndex(index);
+  };
+
+  const closeImageViewer = () => {
+    setSelectedImageIndex(null);
   };
 
   const handleSubmit = async (e: React.FormEvent<ProductFormElement>) => {
@@ -102,16 +136,23 @@ export default function AddProductForm({ onProductAdded }: AddProductFormProps) 
       toast.error("Failed to add product. Please try again.");
     } finally {
       // Reset form state
+      // Revoke all image preview URLs
+      imagePreviews.forEach(url => URL.revokeObjectURL(url));
       setImages([]);
+      setImagePreviews([]);
       setCondition("");
       setCategory("");
       setIsOpen(false);
+      setIsLoading(false);
     }
   };
 
   const handleCancel = () => {
+    // Revoke all image preview URLs
+    imagePreviews.forEach(url => URL.revokeObjectURL(url));
     setIsOpen(false);
     setImages([]);
+    setImagePreviews([]);
     setCondition("");
     setCategory("");
   };
@@ -241,6 +282,42 @@ export default function AddProductForm({ onProductAdded }: AddProductFormProps) 
                       <Upload className="mr-2 h-4 w-4" />
                       Upload Images
                     </Button>
+                    
+                    {/* Image Previews */}
+                    {imagePreviews.length > 0 && (
+                      <div className="grid grid-cols-3 gap-2 mt-2">
+                        {imagePreviews.map((preview, index) => (
+                          <div key={index} className="relative group">
+                            <img 
+                              src={preview} 
+                              alt={`Preview ${index + 1}`}
+                              className="w-full h-24 object-cover rounded border border-gray-200"
+                            />
+                            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-60 transition-all flex items-center justify-center gap-1">
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="secondary"
+                                onClick={() => handleViewImage(index)}
+                                className="opacity-0 group-hover:opacity-100"
+                              >
+                                <Eye className="h-3 w-3" />
+                              </Button>
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => handleRemoveImage(index)}
+                                className="opacity-0 group-hover:opacity-100"
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    
                     <span className="text-sm text-gray-500">{images.length} image(s) selected</span>
                   </div>
                 </div>
@@ -266,6 +343,33 @@ export default function AddProductForm({ onProductAdded }: AddProductFormProps) 
               </form>
             </div>
           </div>
+
+          {/* Image Viewer Modal */}
+          {selectedImageIndex !== null && (
+            <div 
+              className="fixed inset-0 bg-black bg-opacity-90 z-[60] flex items-center justify-center p-4"
+              onClick={closeImageViewer}
+            >
+              <div 
+                className="max-w-7xl max-h-[90vh] w-full h-full flex items-center justify-center"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <img 
+                  src={imagePreviews[selectedImageIndex]} 
+                  alt={`Preview ${selectedImageIndex + 1}`}
+                  className="max-w-full max-h-full object-contain"
+                />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={closeImageViewer}
+                  className="absolute top-4 right-4 text-white hover:bg-gray-800"
+                >
+                  <X className="h-6 w-6" />
+                </Button>
+              </div>
+            </div>
+          )}
         </>
       )}
     </div>
