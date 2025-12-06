@@ -1,9 +1,13 @@
 import { app } from "./app.js";
 import connectDb from "./db.js";
 import SocketService from "./services/socket.service.js";
+import { initVectorSync } from "./services/vectorsync.service.js";
 
 connectDb()
-  .then(() => {
+  .then(async () => {
+    // Initialize VectorSync for AI chatbot
+    await initVectorSync();
+    
     // Initialize Socket.IO service
     const socketService = new SocketService(app);
     const server = socketService.getServer();
@@ -16,3 +20,4 @@ connectDb()
   .catch(() => {
     console.log("Error in connecting to database");
   });
+
