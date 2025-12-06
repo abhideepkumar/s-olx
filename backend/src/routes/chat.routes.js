@@ -1,5 +1,14 @@
 import { Router } from "express";
-import { addMessage, getMessages, updateMessageStatus, updateEscrowStatus, triggerBatchProcessing, getPendingMessagesCount, getPendingMessages, getChats     } from "../controllers/chat.controller.js";
+import { 
+  addMessage, 
+  getMessages, 
+  updateMessageStatus, 
+  updateEscrowStatus, 
+  triggerBatchProcessing, 
+  getPendingMessagesCount, 
+  getPendingMessages,
+  getChats 
+} from "../controllers/chat.controller.js";
 
 const router = Router();
 
@@ -15,11 +24,12 @@ router.route("/message/:messageId/status").patch(updateMessageStatus);
 // Update escrow status
 router.route("/message/:messageId/escrow").patch(updateEscrowStatus);
 
+// Get chats for a user
+router.route("/chats").get(getChats);
+
 // Persistence service endpoints
 router.route("/batch/trigger").post(triggerBatchProcessing);
 router.route("/pending/count").get(getPendingMessagesCount);
 router.route("/pending/messages").get(getPendingMessages);
 
-// Get chats
-router.route("/chats").get(getChats);
 export default router;

@@ -5,6 +5,7 @@ import { SideNav } from '@/components/side-nav'
 import { MobileNav } from '@/components/mobile-nav'
 // import { SearchBar } from '@/components/search-bar'
 import { Toaster } from 'react-hot-toast';
+import Chatbot from '@/components/Chatbot';
 
 const poppins = Poppins({ 
   weight: ['400', '500', '600', '700'],
@@ -43,6 +44,7 @@ export default function RootLayout({
           </div>
         </div>
         <MobileNav className="lg:hidden fixed bottom-0 left-0 right-0" />
+        <Chatbot />
       </body>
     </html>
   )

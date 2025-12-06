@@ -47,6 +47,7 @@ import userRouter from "./routes/user.routes.js";
 import productRoute from "./routes/product.routes.js"
 import postRoute from "./routes/post.routes.js"
 import chatRouter from "./routes/chat.routes.js"
+import aiRouter from "./routes/ai.routes.js"
 import { ApiError } from "./utils/ApiError.js";
 
 // Initialize persistence service
@@ -64,5 +65,24 @@ app.use("/api/v1/users", userRouter);
 app.use("/api/v1/products", productRoute);
 app.use("/api/v1/post", postRoute);
 app.use("/api/v1/chat", chatRouter);
+app.use("/api/v1/ai", aiRouter);
+
+// Global Error Handler
+app.use((err, req, res, next) => {
+    if (err instanceof ApiError) {
+        return res.status(err.statusCode).json({
+            success: false,
+            message: err.message,
+            errors: err.errors,
+            stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+        });
+    }
+    
+    console.error(err);
+    return res.status(500).json({
+        success: false,
+        message: "Internal Server Error"
+    });
+});
 
 export { app };

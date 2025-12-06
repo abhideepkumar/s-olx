@@ -47,9 +47,13 @@ export const CreateProduct = asyncHandler(async (req, res) => {
     const newProduct = await product.create(payload);
     
     //* Generate embedding for semantic search (async, don't wait)
+    //* Generate embedding for semantic search (async, don't wait)
+    // Disabled: VectorSync handles this automatically via Change Streams
+    /*
     semanticSearchService.generateProductEmbedding(newProduct).catch(() => {
       // Silently handle embedding generation errors
     });
+    */
     
     res.status(201).json(new ApiResponse(201, 'New Product listed successfully', newProduct));
   } catch (error) {
@@ -163,9 +167,13 @@ export const updateProduct = asyncHandler(async (req, res) => {
   }
 
   //* Update embedding for semantic search (async, don't wait)
+  //* Update embedding for semantic search (async, don't wait)
+  // Disabled: VectorSync handles this automatically via Change Streams
+  /*
   semanticSearchService.updateProductEmbedding(productId).catch(() => {
     // Silently handle embedding update errors
   });
+  */
 
   return res.status(200).json(new ApiResponse(200, 'Product updated successfully', updatedProduct));
 });
