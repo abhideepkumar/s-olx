@@ -45,6 +45,7 @@ export default function RootLayout({
         </div>
         <Chatbot />
         <MobileNav className="lg:hidden fixed bottom-0 left-0 right-0" />
+        <Chatbot />
       </body>
     </html>
   )

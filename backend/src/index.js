@@ -12,6 +12,9 @@ connectDb()
     const socketService = new SocketService(app);
     const server = socketService.getServer();
     
+    // Initialize VectorSync (Parallel integration)
+    initVectorSync();
+
     server.listen(process.env.PORT || 8000, () => {
       console.log("App started at port: ", process.env.PORT);
       console.log("Socket.IO server initialized");
